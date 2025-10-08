@@ -1,35 +1,30 @@
-package garagemanager.user.entity;
+package garagemanager.user.dto.response;
+
+import garagemanager.user.entity.UserRoles;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
-import lombok.experimental.SuperBuilder;
 
-import java.io.Serializable;
-import java.time.LocalDate;
-import java.util.List;
 import java.util.UUID;
 
 @Getter
 @Setter
-@SuperBuilder
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @ToString
 @EqualsAndHashCode
-public class User implements Serializable {
+public class GetUserResponse {
     private UUID id;
+    private String login;
     private String name;
     private String surname;
-    private LocalDate birthDate;
-
-    private String login;
-    @ToString.Exclude
-    private String password;
     private String email;
-    private List<String> roles;
+    private UserRoles role;
 }

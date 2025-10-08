@@ -1,5 +1,6 @@
 package garagemanager.user.service;
 
+import garagemanager.crypto.component.Pbkdf2PasswordHash;
 import garagemanager.user.entity.User;
 import garagemanager.user.repository.api.UserRepository;
 
