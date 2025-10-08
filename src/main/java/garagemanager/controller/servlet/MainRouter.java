@@ -1,4 +1,4 @@
-package garagemanager.controller;
+package garagemanager.controller.servlet;
 
 import jakarta.json.bind.Jsonb;
 import jakarta.json.bind.JsonbBuilder;
@@ -14,29 +14,16 @@ import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-/**
- * Central API servlet for fetching all request from the client and preparing responses. Servlet API does not allow
- * named path parameters so wildcard is used.
- */
 @WebServlet(urlPatterns = {
         MainRouter.Paths.API + "/*"
 })
 @MultipartConfig(maxFileSize = 200 * 1024)
-    public class MainRouter extends HttpServlet {
+public class MainRouter extends HttpServlet {
 
-    /**
-     * Controller for managing collections characters' representations.
-     */
-    private CharacterController characterController;
+    private UserController userController;
 
-    /**
-     * Controller for managing collections professions' representations.
-     */
     private ProfessionController professionController;
 
-    /**
-     * Definition of paths supported by this servlet. Separate inner class provides composition for static fields.
-     */
     public static final class Paths {
 
         /**
