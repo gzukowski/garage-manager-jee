@@ -1,0 +1,28 @@
+
+###
+GET http://localhost:9080/garage-manager/api/v1/users/
+
+###
+GET http://localhost:9080/garage-manager/api/v1/users/81e1c2a9-7f57-439b-b53d-6db88b071e4e
+
+###
+GET http://localhost:9080/garage-manager/api/v1/users/wrong-pattern
+
+###
+GET http://localhost:9080/garage-manager/api/v1/users/81e1c2a9-7f57-439b-b53d-6db88b071e4f
+
+###
+PUT http://localhost:9080/garage-manager/api/v1/users/c461d210-8cea-4213-a19a-3cb856351d57
+Content-Type: application/json
+
+{
+  "login": "test",
+  "password": "test",
+  "email": "test@example.com",
+  "name": "Sagma",
+  "surname": "Di",
+  "birthDate": "1990-05-15"
+}
+
+###
+DELETE http://localhost:9080/chat-game/api/v1/users/c461d210-8cea-4213-a19a-3cb856351d57

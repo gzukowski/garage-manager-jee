@@ -34,13 +34,18 @@ public class UserInMemRepository implements UserRepository {
     }
 
     @Override
-    public void delete(User entity) {
-        throw new UnsupportedOperationException("Not implemented.");
+    public void update(User entity) {
+        store.updateUser(entity);
     }
 
     @Override
-    public void update(User entity) {
-        store.updateUser(entity);
+    public void delete(UUID id) {
+        store.deleteUser(id);
+    }
+
+    @Override
+    public void delete(User entity) {
+        store.deleteUser(entity);
     }
 
     @Override

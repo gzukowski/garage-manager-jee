@@ -12,10 +12,12 @@ import garagemanager.user.dto.response.GetUsersResponse;
 import garagemanager.user.service.UserService;
 
 import java.util.UUID;
+import java.util.logging.Logger;
 
 public class UserControllerImpl implements UserController {
-    private final UserService service;
+    private static final Logger LOGGER = Logger.getLogger(UserControllerImpl.class.getName());
 
+    private final UserService service;
     private final DtoFunctionFactory factory;
 
     public UserControllerImpl(UserService service, DtoFunctionFactory factory) {
@@ -45,7 +47,7 @@ public class UserControllerImpl implements UserController {
     }
 
     @Override
-    public void putPassword(UUID id, PutPasswordRequest request) {
+    public void putUserPassword(UUID id, PutPasswordRequest request) {
         throw new BadRequestException(); //TODO
     }
 
@@ -61,11 +63,15 @@ public class UserControllerImpl implements UserController {
 
     @Override
     public void deleteUser(UUID id) {
-        service.find(id).ifPresentOrElse(
-                entity -> service.delete(id),
-                () -> {
-                    throw new NotFoundException();
-                }
-        );
+        LOGGER.info(() -> String.format("Attempting to delete user with ID: %s", id));
+
+        var user = service.find(id)
+                .orElseThrow(() -> {
+                    LOGGER.warning(() -> String.format("User with ID %s not found", id));
+                    return new NotFoundException();
+                });
+
+        service.delete(user.getId());
+        LOGGER.info(() -> String.format("User %s has been deleted successfully", id));
     }
 }

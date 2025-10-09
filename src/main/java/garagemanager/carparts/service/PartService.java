@@ -4,6 +4,7 @@ import garagemanager.carparts.repository.api.CarRepository;
 import garagemanager.carparts.repository.api.PartRepository;
 import garagemanager.user.entity.User;
 import garagemanager.carparts.entity.Part;
+import garagemanager.user.repository.api.UserRepository;
 
 import java.io.IOException;
 import java.io.InputStream;

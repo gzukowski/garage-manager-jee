@@ -87,6 +87,18 @@ public class DataStorage {
         }
     }
 
+    public synchronized void deleteUser(UUID id) throws IllegalArgumentException {
+        if (!users.removeIf(user -> user.getId().equals(id))) {
+            throw new IllegalArgumentException("The user with id \"%s\" does not exist".formatted(id));
+        }
+    }
+
+    public synchronized void deleteUser(User value) throws IllegalArgumentException {
+        if (!users.removeIf(user -> user.getId().equals(value.getId()))) {
+            throw new IllegalArgumentException("The user with id \"%s\" does not exist".formatted(value.getId()));
+        }
+    }
+
     private Part cloneWithRelationships(Part value) {
         Part entity = cloningUtility.clone(value);
 
