@@ -29,9 +29,7 @@ public class UserControllerImpl implements UserController {
     public GetUserResponse getUser(UUID id) {
         return service.find(id)
                 .map(factory.userToResponse())
-                .orElseThrow(() -> {
-                    return new NotFoundException();
-                });
+                .orElseThrow(NotFoundException::new);
     }
 
     @Override
@@ -84,7 +82,7 @@ public class UserControllerImpl implements UserController {
     @Override
     public byte[] getUserPhoto(UUID id) {
         return service.find(id)
-                .map(User::getPhoto)
+                .map(entity -> service.getPhoto(id))
                 .orElseThrow(NotFoundException::new);
     }
 

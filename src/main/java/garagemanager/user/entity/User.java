@@ -35,6 +35,6 @@ public class User implements Serializable {
 
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
-    private byte[] photo;
+    private String photoPath;
 
 }

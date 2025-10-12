@@ -8,7 +8,6 @@ GET http://localhost:9080/garage-manager/api/v1/users/81e1c2a9-7f57-439b-b53d-6d
 ###
 GET http://localhost:9080/garage-manager/api/v1/users/81e1c2a9-7f57-439b-b53d-6db88b071e4e/photo
 
-
 ###
 # Get single user photo. Not existing, created later.
 GET http://localhost:9080/garage-manager/api/v1/users/c461d210-8cea-4213-a19a-3cb856351d57/photo

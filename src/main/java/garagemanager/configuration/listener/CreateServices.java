@@ -23,7 +23,7 @@ public class CreateServices implements ServletContextListener {
 
         UserRepository userRepository = new UserInMemRepository(dataSource);
 
-        event.getServletContext().setAttribute("userService", new UserService(userRepository, new Pbkdf2PasswordHash()));
+        event.getServletContext().setAttribute("userService", new UserService(userRepository, new Pbkdf2PasswordHash(), ""));
     }
 
 }
