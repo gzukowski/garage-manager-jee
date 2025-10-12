@@ -20,7 +20,7 @@ import java.util.regex.Pattern;
 @WebServlet(urlPatterns = {
         ApiServlet.Paths.API + "/*"
 })
-@MultipartConfig(maxFileSize = 200 * 1024)
+@MultipartConfig(maxFileSize = 5 * 1024 * 1024)
 public class ApiServlet extends HttpServlet {
 
     private UserController userController;
@@ -98,14 +98,14 @@ public class ApiServlet extends HttpServlet {
                 UUID uuid = extractUuid(Patterns.USER, path);
                 response.getWriter().write(jsonb.toJson(userController.getUser(uuid)));
                 return;
-            } //else if (path.matches(Patterns.USER_PHOTO.pattern())) {
-                //response.setContentType("image/png");//could be dynamic but atm we support only one format
-                //UUID uuid = extractUuid(Patterns.USER_PHOTO, path);
-                //byte[] photo = userController.getUserPhoto(uuid);
-                //response.setContentLength(photo.length);
-                //response.getOutputStream().write(photo);
-                //return;
-            //}
+            } else if (path.matches(Patterns.USER_PHOTO.pattern())) {
+                response.setContentType("image/png");//could be dynamic but atm we support only one format
+                UUID uuid = extractUuid(Patterns.USER_PHOTO, path);
+                byte[] photo = userController.getUserPhoto(uuid);
+                response.setContentLength(photo.length);
+                response.getOutputStream().write(photo);
+                return;
+            }
         }
         response.sendError(HttpServletResponse.SC_BAD_REQUEST);
     }
@@ -119,11 +119,11 @@ public class ApiServlet extends HttpServlet {
                 userController.putUser(uuid, jsonb.fromJson(request.getReader(), PutUserRequest.class));
                 response.addHeader("Location", createUrl(request, Paths.API, "users", uuid.toString()));
                 return;
-            } //else if (path.matches(Patterns.USER_PHOTO.pattern())) {
-                //UUID uuid = extractUuid(Patterns.USER_PHOTO, path);
-                //userController.putUserPhoto(uuid, request.getPart("photo").getInputStream());
-              //  return;
-            //}
+            } else if (path.matches(Patterns.USER_PHOTO.pattern())) {
+                UUID uuid = extractUuid(Patterns.USER_PHOTO, path);
+                userController.putUserPhoto(uuid, request.getPart("photo").getInputStream());
+                return;
+            }
         }
         response.sendError(HttpServletResponse.SC_BAD_REQUEST);
     }
@@ -137,7 +137,6 @@ public class ApiServlet extends HttpServlet {
             if (path.matches(Patterns.USER.pattern())) {
                 UUID uuid = extractUuid(Patterns.USER, path);
                 userController.deleteUser(uuid);
-                System.console().printf("User %s has been deleted", uuid);
                 return;
             }
         }

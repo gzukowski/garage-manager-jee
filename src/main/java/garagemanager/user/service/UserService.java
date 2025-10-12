@@ -4,6 +4,8 @@ import garagemanager.crypto.component.Pbkdf2PasswordHash;
 import garagemanager.user.entity.User;
 import garagemanager.user.repository.api.UserRepository;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -48,5 +50,17 @@ public class UserService {
                 .map(user -> passwordHash.verify(password.toCharArray(), user.getPassword()))
                 .orElse(false);
     }
+
+    public void updatePhoto(UUID id, InputStream is) {
+        repository.find(id).ifPresent(user -> {
+            try {
+                user.setPhoto(is.readAllBytes());
+                repository.update(user);
+            } catch (IOException ex) {
+                throw new IllegalStateException(ex);
+            }
+        });
+    }
+
 
 }

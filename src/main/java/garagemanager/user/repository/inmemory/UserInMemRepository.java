@@ -45,7 +45,7 @@ public class UserInMemRepository implements UserRepository {
 
     @Override
     public void delete(User entity) {
-        store.deleteUser(entity);
+        store.deleteUser(entity.getId());
     }
 
     @Override

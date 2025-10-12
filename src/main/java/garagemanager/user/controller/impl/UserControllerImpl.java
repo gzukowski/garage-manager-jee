@@ -10,12 +10,12 @@ import garagemanager.user.dto.request.PutUserRequest;
 import garagemanager.user.dto.response.GetUserResponse;
 import garagemanager.user.dto.response.GetUsersResponse;
 import garagemanager.user.service.UserService;
+import garagemanager.user.entity.User;
 
+import java.io.InputStream;
 import java.util.UUID;
-import java.util.logging.Logger;
 
 public class UserControllerImpl implements UserController {
-    private static final Logger LOGGER = Logger.getLogger(UserControllerImpl.class.getName());
 
     private final UserService service;
     private final DtoFunctionFactory factory;
@@ -29,12 +29,15 @@ public class UserControllerImpl implements UserController {
     public GetUserResponse getUser(UUID id) {
         return service.find(id)
                 .map(factory.userToResponse())
-                .orElseThrow(NotFoundException::new);
+                .orElseThrow(() -> {
+                    return new NotFoundException();
+                });
     }
 
     @Override
     public GetUsersResponse getUsers() {
-        return factory.usersToResponse().apply(service.findAll());
+        var users = service.findAll();
+        return factory.usersToResponse().apply(users);
     }
 
     @Override
@@ -43,18 +46,23 @@ public class UserControllerImpl implements UserController {
             service.create(factory.requestToUser().apply(id, request));
         } catch (IllegalArgumentException exception) {
             throw new BadRequestException();
+        } catch (Exception exception) {
+            throw new BadRequestException();
         }
     }
 
     @Override
     public void putUserPassword(UUID id, PutPasswordRequest request) {
-        throw new BadRequestException(); //TODO
+        // TODO implement actual logic
+        throw new BadRequestException();
     }
 
     @Override
     public void patchUser(UUID id, PatchUserRequest request) {
         service.find(id).ifPresentOrElse(
-                entity -> service.update(factory.updateUser().apply(entity, request)),
+                entity -> {
+                    service.update(factory.updateUser().apply(entity, request));
+                },
                 () -> {
                     throw new NotFoundException();
                 }
@@ -63,15 +71,31 @@ public class UserControllerImpl implements UserController {
 
     @Override
     public void deleteUser(UUID id) {
-        LOGGER.info(() -> String.format("Attempting to delete user with ID: %s", id));
-
         var user = service.find(id)
-                .orElseThrow(() -> {
-                    LOGGER.warning(() -> String.format("User with ID %s not found", id));
-                    return new NotFoundException();
-                });
+                .orElseThrow(NotFoundException::new);
 
-        service.delete(user.getId());
-        LOGGER.info(() -> String.format("User %s has been deleted successfully", id));
+        try {
+            service.delete(user.getId());
+        } catch (Exception exception) {
+            throw new BadRequestException();
+        }
     }
+
+    @Override
+    public byte[] getUserPhoto(UUID id) {
+        return service.find(id)
+                .map(User::getPhoto)
+                .orElseThrow(NotFoundException::new);
+    }
+
+    @Override
+    public void putUserPhoto(UUID id, InputStream photo) {
+        service.find(id).ifPresentOrElse(
+                entity -> service.updatePhoto(id, photo),
+                () -> {
+                    throw new NotFoundException();
+                }
+        );
+    }
+
 }

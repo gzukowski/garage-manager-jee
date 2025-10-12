@@ -6,6 +6,7 @@ import garagemanager.user.dto.request.PutUserRequest;
 import garagemanager.user.dto.response.GetUserResponse;
 import garagemanager.user.dto.response.GetUsersResponse;
 
+import java.io.InputStream;
 import java.util.UUID;
 
 public interface UserController {
@@ -15,4 +16,8 @@ public interface UserController {
     void putUserPassword(UUID id, PutPasswordRequest request);
     void patchUser(UUID id, PatchUserRequest request);
     void deleteUser(UUID id);
+
+    byte[] getUserPhoto(UUID id);
+    void putUserPhoto(UUID id, InputStream photo);
+
 }

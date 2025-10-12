@@ -14,6 +14,10 @@ public class RequestToUserUpdateFunction implements BiFunction<User, PatchUserRe
                 .name(request.getName())
                 .surname(request.getSurname())
                 .email(request.getEmail())
+                .login(entity.getLogin())
+                .birthDate(entity.getBirthDate())
+                .photo(entity.getPhoto())
+                .password(entity.getPassword())
                 .build();
     }
 

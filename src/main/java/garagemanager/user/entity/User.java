@@ -32,4 +32,9 @@ public class User implements Serializable {
     private String password;
     private String email;
     private List<String> roles;
+
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
+    private byte[] photo;
+
 }
