@@ -1,0 +1,68 @@
+
+###
+GET http://localhost:9080/garage-manager/api/v1/users/
+
+###
+GET http://localhost:9080/garage-manager/api/v1/users/81e1c2a9-7f57-439b-b53d-6db88b071e4e
+
+###
+GET http://localhost:9080/garage-manager/api/v1/users/81e1c2a9-7f57-439b-b53d-6db88b071e4e/photo
+
+###
+# Get single user photo. Not existing, created later.
+GET http://localhost:9080/garage-manager/api/v1/users/c461d210-8cea-4213-a19a-3cb856351d57/photo
+
+###
+GET http://localhost:9080/garage-manager/api/v1/users/wrong-pattern
+
+
+# not existing one
+###
+GET http://localhost:9080/garage-manager/api/v1/users/c461d210-8cea-4213-a19a-3cb856351d57
+
+###
+PUT http://localhost:9080/garage-manager/api/v1/users/c461d210-8cea-4213-a19a-3cb856351d57
+Content-Type: application/json
+
+{
+  "login": "test",
+  "password": "test",
+  "email": "test@example.com",
+  "name": "Sagma",
+  "surname": "Di",
+  "birthDate": "1990-05-15"
+}
+
+
+###
+
+PUT http://localhost:9080/garage-manager/api/v1/users/c461d210-8cea-4213-a19a-3cb856351d57/photo
+Content-Type: multipart/form-data; boundary=boundary
+
+--boundary
+Content-Disposition: form-data; name="photo"; filename="Sagma.png'
+
+< src/main/resources/garagemanager/configuration/photo/Sagma.png
+--boundary--
+
+###
+GET http://localhost:9080/garage-manager/api/v1/users/c461d210-8cea-4213-a19a-3cb856351d57/photo
+
+
+###
+
+# Update user.
+
+PATCH http://localhost:9080/garage-manager/api/v1/users/c461d210-8cea-4213-a19a-3cb856351d57
+Content-Type: application/json
+
+{
+  "name": "Pies",
+  "surname": "Dog",
+  "email": "pies@dog.com"
+}
+
+
+
+###
+DELETE http://localhost:9080/garage-manager/api/v1/users/c461d210-8cea-4213-a19a-3cb856351d57

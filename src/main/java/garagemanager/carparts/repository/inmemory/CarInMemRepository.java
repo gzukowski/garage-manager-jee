@@ -2,6 +2,7 @@ package garagemanager.carparts.repository.inmemory;
 
 import garagemanager.carparts.entity.Car;
 import garagemanager.carparts.repository.api.CarRepository;
+import garagemanager.datastorage.component.DataStorage;
 
 import java.util.List;
 import java.util.Optional;
@@ -9,9 +10,9 @@ import java.util.UUID;
 
 public class CarInMemRepository implements CarRepository {
 
-    private final DataStore store;
+    private final DataStorage store;
 
-    public CarInMemRepository(DataStore store) {
+    public CarInMemRepository(DataStorage store) {
         this.store = store;
     }
 

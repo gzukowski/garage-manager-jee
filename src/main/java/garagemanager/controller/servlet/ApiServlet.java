@@ -1,5 +1,8 @@
-package garagemanager.controller;
+package garagemanager.controller.servlet;
 
+import garagemanager.user.controller.api.UserController;
+import garagemanager.user.dto.request.PatchUserRequest;
+import garagemanager.user.dto.request.PutUserRequest;
 import jakarta.json.bind.Jsonb;
 import jakarta.json.bind.JsonbBuilder;
 import jakarta.servlet.ServletException;
@@ -14,29 +17,14 @@ import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-/**
- * Central API servlet for fetching all request from the client and preparing responses. Servlet API does not allow
- * named path parameters so wildcard is used.
- */
 @WebServlet(urlPatterns = {
-        MainRouter.Paths.API + "/*"
+        ApiServlet.Paths.API + "/*"
 })
-@MultipartConfig(maxFileSize = 200 * 1024)
-    public class MainRouter extends HttpServlet {
+@MultipartConfig(maxFileSize = 5 * 1024 * 1024)
+public class ApiServlet extends HttpServlet {
 
-    /**
-     * Controller for managing collections characters' representations.
-     */
-    private CharacterController characterController;
+    private UserController userController;
 
-    /**
-     * Controller for managing collections professions' representations.
-     */
-    private ProfessionController professionController;
-
-    /**
-     * Definition of paths supported by this servlet. Separate inner class provides composition for static fields.
-     */
     public static final class Paths {
 
         /**
@@ -57,34 +45,19 @@ import java.util.regex.Pattern;
         private static final Pattern UUID = Pattern.compile("[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}");
 
         /**
-         * All characters.
+         * All parts.
          */
-        public static final Pattern CHARACTERS = Pattern.compile("/characters/?");
+        public static final Pattern USERS = Pattern.compile("/users/?");
 
         /**
-         * Single character.
+         * Single part.
          */
-        public static final Pattern CHARACTER = Pattern.compile("/characters/(%s)".formatted(UUID.pattern()));
+        public static final Pattern USER = Pattern.compile("/users/(%s)".formatted(UUID.pattern()));
 
         /**
-         * Single character's portrait.
+         * Single user's photo.
          */
-        public static final Pattern CHARACTER_PORTRAIT = Pattern.compile("/characters/(%s)/portrait".formatted(UUID.pattern()));
-
-        /**
-         * All professions.
-         */
-        public static final Pattern PROFESSIONS = Pattern.compile("/professions/?");
-
-        /**
-         * All characters of single profession.
-         */
-        public static final Pattern PROFESSION_CHARACTERS = Pattern.compile("/professions/(%s)/characters/?".formatted(UUID.pattern()));
-
-        /**
-         * All characters of single user.
-         */
-        public static final Pattern USER_CHARACTERS = Pattern.compile("/users/(%s)/characters/?".formatted(UUID.pattern()));
+        public static final Pattern USER_PHOTO = Pattern.compile("/users/(%s)/photo".formatted(UUID.pattern()));
 
     }
 
@@ -107,8 +80,7 @@ import java.util.regex.Pattern;
     @Override
     public void init() throws ServletException {
         super.init();
-        characterController = (CharacterController) getServletContext().getAttribute("characterController");
-        professionController = (ProfessionController) getServletContext().getAttribute("professionController");
+        userController = (UserController) getServletContext().getAttribute("userController");
     }
 
     @SuppressWarnings("RedundantThrows")
@@ -117,35 +89,21 @@ import java.util.regex.Pattern;
         String path = parseRequestPath(request);
         String servletPath = request.getServletPath();
         if (Paths.API.equals(servletPath)) {
-            if (path.matches(Patterns.CHARACTERS.pattern())) {
+            if (path.matches(Patterns.USERS.pattern())) {
                 response.setContentType("application/json");
-                response.getWriter().write(jsonb.toJson(characterController.getCharacters()));
+                response.getWriter().write(jsonb.toJson(userController.getUsers()));
                 return;
-            } else if (path.matches(Patterns.CHARACTER.pattern())) {
+            } else if (path.matches(Patterns.USER.pattern())) {
                 response.setContentType("application/json");
-                UUID uuid = extractUuid(Patterns.CHARACTER, path);
-                response.getWriter().write(jsonb.toJson(characterController.getCharacter(uuid)));
+                UUID uuid = extractUuid(Patterns.USER, path);
+                response.getWriter().write(jsonb.toJson(userController.getUser(uuid)));
                 return;
-            } else if (path.matches(Patterns.PROFESSIONS.pattern())) {
-                response.setContentType("application/json");
-                response.getWriter().write(jsonb.toJson(professionController.getProfessions()));
-                return;
-            } else if (path.matches(Patterns.PROFESSION_CHARACTERS.pattern())) {
-                response.setContentType("application/json");
-                UUID uuid = extractUuid(Patterns.PROFESSION_CHARACTERS, path);
-                response.getWriter().write(jsonb.toJson(characterController.getProfessionCharacters(uuid)));
-                return;
-            } else if (path.matches(Patterns.USER_CHARACTERS.pattern())) {
-                response.setContentType("application/json");
-                UUID uuid = extractUuid(Patterns.USER_CHARACTERS, path);
-                response.getWriter().write(jsonb.toJson(characterController.getUserCharacters(uuid)));
-                return;
-            } else if (path.matches(Patterns.CHARACTER_PORTRAIT.pattern())) {
+            } else if (path.matches(Patterns.USER_PHOTO.pattern())) {
                 response.setContentType("image/png");//could be dynamic but atm we support only one format
-                UUID uuid = extractUuid(Patterns.CHARACTER_PORTRAIT, path);
-                byte[] portrait = characterController.getCharacterPortrait(uuid);
-                response.setContentLength(portrait.length);
-                response.getOutputStream().write(portrait);
+                UUID uuid = extractUuid(Patterns.USER_PHOTO, path);
+                byte[] photo = userController.getUserPhoto(uuid);
+                response.setContentLength(photo.length);
+                response.getOutputStream().write(photo);
                 return;
             }
         }
@@ -156,14 +114,14 @@ import java.util.regex.Pattern;
         String path = parseRequestPath(request);
         String servletPath = request.getServletPath();
         if (Paths.API.equals(servletPath)) {
-            if (path.matches(Patterns.CHARACTER.pattern())) {
-                UUID uuid = extractUuid(Patterns.CHARACTER, path);
-                characterController.putCharacter(uuid, jsonb.fromJson(request.getReader(), PutCharacterRequest.class));
-                response.addHeader("Location", createUrl(request, Paths.API, "characters", uuid.toString()));
+            if (path.matches(Patterns.USER.pattern())) {
+                UUID uuid = extractUuid(Patterns.USER, path);
+                userController.putUser(uuid, jsonb.fromJson(request.getReader(), PutUserRequest.class));
+                response.addHeader("Location", createUrl(request, Paths.API, "users", uuid.toString()));
                 return;
-            } else if (path.matches(Patterns.CHARACTER_PORTRAIT.pattern())) {
-                UUID uuid = extractUuid(Patterns.CHARACTER_PORTRAIT, path);
-                characterController.putCharacterPortrait(uuid, request.getPart("portrait").getInputStream());
+            } else if (path.matches(Patterns.USER_PHOTO.pattern())) {
+                UUID uuid = extractUuid(Patterns.USER_PHOTO, path);
+                userController.putUserPhoto(uuid, request.getPart("photo").getInputStream());
                 return;
             }
         }
@@ -176,9 +134,9 @@ import java.util.regex.Pattern;
         String path = parseRequestPath(request);
         String servletPath = request.getServletPath();
         if (Paths.API.equals(servletPath)) {
-            if (path.matches(Patterns.CHARACTER.pattern())) {
-                UUID uuid = extractUuid(Patterns.CHARACTER, path);
-                characterController.deleteCharacter(uuid);
+            if (path.matches(Patterns.USER.pattern())) {
+                UUID uuid = extractUuid(Patterns.USER, path);
+                userController.deleteUser(uuid);
                 return;
             }
         }
@@ -198,9 +156,9 @@ import java.util.regex.Pattern;
         String path = parseRequestPath(request);
         String servletPath = request.getServletPath();
         if (Paths.API.equals(servletPath)) {
-            if (path.matches(Patterns.CHARACTER.pattern())) {
-                UUID uuid = extractUuid(Patterns.CHARACTER, path);
-                characterController.patchCharacter(uuid, jsonb.fromJson(request.getReader(), PatchCharacterRequest.class));
+            if (path.matches(Patterns.USER.pattern())) {
+                UUID uuid = extractUuid(Patterns.USER, path);
+                userController.patchUser(uuid, jsonb.fromJson(request.getReader(), PatchUserRequest.class));
                 return;
             }
         }
