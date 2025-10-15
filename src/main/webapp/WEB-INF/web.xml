@@ -8,4 +8,9 @@
         <listener-class>garagemanager.configuration.listener.CreateDataSource</listener-class>
     </listener>
 
+    <context-param>
+        <param-name>photosDir</param-name>
+        <param-value>C:\Users\gzukowski\IdeaProjects\GarageManager</param-value>
+    </context-param>
+
 </web-app>

@@ -71,15 +71,10 @@ public class UserService {
     public void updatePhoto(UUID id, InputStream photo) {
         repository.find(id).ifPresent(user -> {
             try {
-                // Unikalna nazwa pliku, np. kevin_3f27a.png
-                String fileName = user.getLogin() + "_" + UUID.randomUUID() + ".png";
+                String fileName = user.getId() + ".png";
                 Path avatarPath = photoDir.resolve(fileName);
-
-                // Zapis pliku
                 Files.createDirectories(photoDir);
                 Files.write(avatarPath, photo.readAllBytes());
-
-                // Zapis ścieżki (zawsze absolutna)
                 user.setPhotoPath(avatarPath.toString());
                 repository.update(user);
 
@@ -93,12 +88,12 @@ public class UserService {
         return repository.find(id).map(user -> {
             String storedPath = user.getPhotoPath();
             if (storedPath == null || storedPath.isBlank()) {
-                return new byte[0];
+                return null;
             }
 
             Path photoPath = Paths.get(storedPath);
             if (!Files.exists(photoPath)) {
-                return new byte[0];
+                return null;
             }
 
             try {
