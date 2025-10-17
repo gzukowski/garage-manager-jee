@@ -1,5 +1,9 @@
 package garagemanager.datastorage.component;
 
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
+import lombok.NoArgsConstructor;
+import lombok.extern.java.Log;
 import garagemanager.carparts.entity.Car;
 import garagemanager.carparts.entity.Part;
 import garagemanager.serialization.component.CloningUtility;
@@ -11,7 +15,9 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-
+@Log
+@ApplicationScoped
+@NoArgsConstructor(force = true)
 public class DataStorage {
 
     private final Set<Car> cars = new HashSet<>();
@@ -20,6 +26,7 @@ public class DataStorage {
 
     private final CloningUtility cloningUtility;
 
+    @Inject
     public DataStorage(CloningUtility cloningUtility) {
         this.cloningUtility = cloningUtility;
     }

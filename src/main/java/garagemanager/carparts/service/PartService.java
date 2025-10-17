@@ -5,6 +5,9 @@ import garagemanager.carparts.repository.api.PartRepository;
 import garagemanager.user.entity.User;
 import garagemanager.carparts.entity.Part;
 import garagemanager.user.repository.api.UserRepository;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
+import lombok.NoArgsConstructor;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -12,6 +15,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+@ApplicationScoped
+@NoArgsConstructor(force = true)
 public class PartService {
     private final PartRepository partRepository;
 
@@ -19,6 +24,7 @@ public class PartService {
 
     private final UserRepository userRepository;
 
+    @Inject
     public PartService(PartRepository partRepository, CarRepository carRepository, UserRepository userRepository) {
         this.partRepository = partRepository;
         this.carRepository = carRepository;

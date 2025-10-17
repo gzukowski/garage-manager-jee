@@ -1,8 +1,12 @@
 package garagemanager.user.service;
 
+import garagemanager.configuration.qualifier.PhotosDir;
 import garagemanager.crypto.component.Pbkdf2PasswordHash;
 import garagemanager.user.entity.User;
 import garagemanager.user.repository.api.UserRepository;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
+import lombok.NoArgsConstructor;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -13,6 +17,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+@ApplicationScoped
+@NoArgsConstructor(force = true)
 public class UserService {
     private final UserRepository repository;
 
@@ -20,7 +26,8 @@ public class UserService {
 
     private final Path photoDir;
 
-    public UserService(UserRepository repository, Pbkdf2PasswordHash passwordHash, String  photoDir) {
+    @Inject
+    public UserService(UserRepository repository, Pbkdf2PasswordHash passwordHash, @PhotosDir String photoDir) {
         this.repository = repository;
         this.passwordHash = passwordHash;
 

@@ -2,7 +2,10 @@ package garagemanager.component;
 
 import garagemanager.carparts.dto.function.*;
 import garagemanager.user.dto.function.*;
+import jakarta.enterprise.context.ApplicationScoped;
 
+
+@ApplicationScoped
 public class DtoFunctionFactory {
 
     public PartToResponseFunction partToResponse() {

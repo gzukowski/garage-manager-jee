@@ -3,6 +3,7 @@ package garagemanager.controller.servlet;
 import garagemanager.user.controller.api.UserController;
 import garagemanager.user.dto.request.PatchUserRequest;
 import garagemanager.user.dto.request.PutUserRequest;
+import jakarta.inject.Inject;
 import jakarta.json.bind.Jsonb;
 import jakarta.json.bind.JsonbBuilder;
 import jakarta.servlet.ServletException;
@@ -68,6 +69,18 @@ public class ApiServlet extends HttpServlet {
      */
     private final Jsonb jsonb = JsonbBuilder.create();
 
+    @Inject
+    public ApiServlet(
+            //CharacterController characterController,
+            //ProfessionController professionController,
+            UserController userController
+    ) {
+        //this.characterController = characterController;
+       // this.professionController = professionController;
+        this.userController = userController;
+    }
+
+
     @Override
     protected void service(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         if (request.getMethod().equals("PATCH")) {
@@ -75,12 +88,6 @@ public class ApiServlet extends HttpServlet {
         } else {
             super.service(request, response);
         }
-    }
-
-    @Override
-    public void init() throws ServletException {
-        super.init();
-        userController = (UserController) getServletContext().getAttribute("userController");
     }
 
     @SuppressWarnings("RedundantThrows")

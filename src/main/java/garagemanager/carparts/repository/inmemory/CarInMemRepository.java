@@ -3,15 +3,19 @@ package garagemanager.carparts.repository.inmemory;
 import garagemanager.carparts.entity.Car;
 import garagemanager.carparts.repository.api.CarRepository;
 import garagemanager.datastorage.component.DataStorage;
+import jakarta.enterprise.context.RequestScoped;
+import jakarta.inject.Inject;
 
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+@RequestScoped
 public class CarInMemRepository implements CarRepository {
 
     private final DataStorage store;
 
+    @Inject
     public CarInMemRepository(DataStorage store) {
         this.store = store;
     }

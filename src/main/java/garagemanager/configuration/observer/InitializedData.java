@@ -1,9 +1,14 @@
-package garagemanager.configuration.listener;
+package garagemanager.configuration.observer;
 
 
 import garagemanager.user.entity.User;
 import garagemanager.user.entity.UserRoles;
 import garagemanager.user.service.UserService;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.enterprise.context.Initialized;
+import jakarta.enterprise.context.control.RequestContextController;
+import jakarta.enterprise.event.Observes;
+import jakarta.inject.Inject;
 import jakarta.servlet.ServletContextEvent;
 import jakarta.servlet.ServletContextListener;
 import jakarta.servlet.annotation.WebListener;
@@ -20,17 +25,29 @@ import java.util.List;
 import java.util.UUID;
 
 
-@WebListener//using annotation does not allow configuring order
-public class InitializedData implements ServletContextListener {
+@ApplicationScoped
+public class InitializedData {
 
     /**
      * User service.
      */
     private UserService userService;
 
-    @Override
-    public void contextInitialized(ServletContextEvent event) {
-        userService = (UserService) event.getServletContext().getAttribute("userService");
+    private final RequestContextController requestContextController;
+    @Inject
+    public InitializedData(
+           // CharacterService characterService,
+            UserService userService,
+            //ProfessionService professionService,
+            RequestContextController requestContextController
+    ) {
+       // this.characterService = characterService;
+        this.userService = userService;
+        //this.professionService = professionService;
+        this.requestContextController = requestContextController;
+    }
+
+    public void contextInitialized(@Observes @Initialized(ApplicationScoped.class) Object init) {
         init();
     }
 
@@ -40,6 +57,8 @@ public class InitializedData implements ServletContextListener {
      */
     @SneakyThrows
     private void init() {
+
+        requestContextController.activate();
 
         createUserWithPhoto(UUID.fromString("c4804e0f-769e-4ab9-9ebe-0578fb4f00a6"),
                 "admin", "System", "Admin", LocalDate.of(1990, 10, 21),
@@ -58,21 +77,6 @@ public class InitializedData implements ServletContextListener {
                 "alice@example.com", "useruser",
                 List.of(UserRoles.USER),
                 Path.of("C:\\Users\\gzukowski\\IdeaProjects\\GarageManager\\src\\main\\resources\\garagemanager\\configuration\\photo\\Alice.png"));
-    }
-
-    /**
-     * @param name name of the desired resource
-     * @return array of bytes read from the resource
-     */
-    @SneakyThrows
-    private byte[] getResourceAsByteArray(String name) {
-        try (InputStream is = this.getClass().getResourceAsStream(name)) {
-            if (is != null) {
-                return is.readAllBytes();
-            } else {
-                throw new IllegalStateException("Unable to get resource %s".formatted(name));
-            }
-        }
     }
 
     @SneakyThrows
