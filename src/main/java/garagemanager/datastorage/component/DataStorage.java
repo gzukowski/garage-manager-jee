@@ -31,6 +31,8 @@ public class DataStorage {
         this.cloningUtility = cloningUtility;
     }
 
+    // === CARS ===
+
     public synchronized List<Car> findAllCars() {
         return cars.stream()
                 .map(cloningUtility::clone)
@@ -44,7 +46,31 @@ public class DataStorage {
         cars.add(cloningUtility.clone(value));
     }
 
-        public synchronized List<Part> findAllParts() {
+    public synchronized void updateCar(Car value) throws IllegalArgumentException {
+        Car existing = cars.stream()
+                .filter(car -> car.getId().equals(value.getId()))
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("The car with id \"%s\" does not exist".formatted(value.getId())));
+
+        existing.setName(value.getName());
+        existing.setBrand(value.getBrand());
+        existing.setProductionYear(value.getProductionYear());
+        existing.setFuelType(value.getFuelType());
+        existing.setMileage(value.getMileage());
+    }
+
+    public synchronized void deleteCar(UUID id) throws IllegalArgumentException {
+        Car carToDelete = cars.stream()
+                .filter(car -> car.getId().equals(id))
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("The car with id \"%s\" does not exist".formatted(id)));
+
+        parts.removeIf(part -> part.getCar() != null && part.getCar().getId().equals(id));
+
+        cars.remove(carToDelete);
+    }
+
+    public synchronized List<Part> findAllParts() {
         return parts.stream()
                 .map(cloningUtility::clone)
                 .collect(Collectors.toList());
@@ -87,7 +113,7 @@ public class DataStorage {
     }
 
     public synchronized void updateUser(User value) throws IllegalArgumentException {
-        if (users.removeIf(Part -> Part.getId().equals(value.getId()))) {
+        if (users.removeIf(u -> u.getId().equals(value.getId()))) {
             users.add(cloningUtility.clone(value));
         } else {
             throw new IllegalArgumentException("The user with id \"%s\" does not exist".formatted(value.getId()));
@@ -95,9 +121,18 @@ public class DataStorage {
     }
 
     public synchronized void deleteUser(UUID id) throws IllegalArgumentException {
-        if (!users.removeIf(user -> user.getId().equals(id))) {
-            throw new IllegalArgumentException("The user with id \"%s\" does not exist".formatted(id));
-        }
+        User userToDelete = users.stream()
+                .filter(user -> user.getId().equals(id))
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("The user with id \"%s\" does not exist".formatted(id)));
+
+        List<Part> userParts = parts.stream()
+                .filter(part -> part.getUser() != null && part.getUser().getId().equals(id))
+                .collect(Collectors.toList());
+
+        parts.removeAll(userParts);
+
+        users.remove(userToDelete);
     }
 
     private Part cloneWithRelationships(Part value) {

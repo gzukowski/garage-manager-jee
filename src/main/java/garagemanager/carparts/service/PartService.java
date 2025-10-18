@@ -1,5 +1,6 @@
 package garagemanager.carparts.service;
 
+import garagemanager.carparts.entity.Car;
 import garagemanager.carparts.repository.api.CarRepository;
 import garagemanager.carparts.repository.api.PartRepository;
 import garagemanager.user.entity.User;
@@ -11,9 +12,11 @@ import lombok.NoArgsConstructor;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @ApplicationScoped
 @NoArgsConstructor(force = true)
@@ -55,21 +58,6 @@ public class PartService {
         partRepository.update(part);
     }
 
-    public void delete(UUID id) {
-        partRepository.delete(partRepository.find(id).orElseThrow());
-    }
-
-    public void updatePhoto(UUID id, InputStream is) {
-        partRepository.find(id).ifPresent(part -> {
-            try {
-                part.setPhoto(is.readAllBytes());
-                partRepository.update(part);
-            } catch (IOException ex) {
-                throw new IllegalStateException(ex);
-            }
-        });
-    }
-
     public Optional<List<Part>> findAllByCar(UUID id) {
         return carRepository.find(id)
                 .map(partRepository::findAllByCar);
@@ -78,6 +66,26 @@ public class PartService {
     public Optional<List<Part>> findAllByUser(UUID id) {
         return userRepository.find(id)
                 .map(partRepository::findAllByUser);
+    }
+
+    public void create(Part part, Car car, User user) {
+        Car existingCar = carRepository.find(car.getId())
+                .orElseThrow(() -> new IllegalArgumentException("Nie znaleziono samochodu."));
+        User existingUser = userRepository.find(user.getId())
+                .orElseThrow(() -> new IllegalArgumentException("Nie znaleziono użytkownika."));
+
+        part.setCar(existingCar);
+        part.setUser(existingUser);
+
+        if (part.getAddedDate() == null) {
+            part.setAddedDate(LocalDateTime.now());
+        }
+
+        partRepository.create(part);
+    }
+
+    public void delete(UUID id) {
+        partRepository.find(id).ifPresent(partRepository::delete);
     }
 
 }

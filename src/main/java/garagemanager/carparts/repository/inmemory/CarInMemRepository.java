@@ -39,12 +39,12 @@ public class CarInMemRepository implements CarRepository {
 
     @Override
     public void delete(Car entity) {
-        throw new UnsupportedOperationException("Operation not implemented.");
+        store.deleteCar(entity.getId());
     }
 
     @Override
     public void update(Car entity) {
-        throw new UnsupportedOperationException("Operation not implemented.");
+        store.updateCar(entity);
     }
 
 }
