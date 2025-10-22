@@ -31,8 +31,4 @@ public class Part implements Serializable {
     private PartCondition condition;
     private Car car;
     private User user;
-
-    @ToString.Exclude
-    @EqualsAndHashCode.Exclude
-    private byte[] photo;
 }

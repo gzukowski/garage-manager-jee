@@ -1,6 +1,7 @@
 package garagemanager.crypto.component;
 
 import lombok.SneakyThrows;
+import jakarta.enterprise.context.Dependent;
 
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.PBEKeySpec;
@@ -9,6 +10,8 @@ import java.security.SecureRandom;
 import java.security.spec.KeySpec;
 import java.util.Base64;
 
+
+@Dependent
 public class Pbkdf2PasswordHash {
 
     private static final String ALGORITHM = "PBKDF2WithHmacSHA256";

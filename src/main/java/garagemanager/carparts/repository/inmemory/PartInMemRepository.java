@@ -5,16 +5,19 @@ import garagemanager.datastorage.component.DataStorage;
 import garagemanager.carparts.entity.Car;
 import garagemanager.carparts.entity.Part;
 import garagemanager.user.entity.User;
+import jakarta.enterprise.context.RequestScoped;
+import jakarta.inject.Inject;
 
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-
+@RequestScoped
 public class PartInMemRepository implements PartRepository {
     private final DataStorage store;
 
+    @Inject
     public PartInMemRepository(DataStorage store) {
         this.store = store;
     }

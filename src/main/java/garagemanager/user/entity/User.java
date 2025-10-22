@@ -1,12 +1,7 @@
 package garagemanager.user.entity;
 
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
+import garagemanager.carparts.entity.Part;
+import lombok.*;
 import lombok.experimental.SuperBuilder;
 
 import java.io.Serializable;

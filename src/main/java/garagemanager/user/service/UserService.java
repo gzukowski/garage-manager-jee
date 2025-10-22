@@ -1,8 +1,14 @@
 package garagemanager.user.service;
 
+import garagemanager.carparts.entity.Part;
+import garagemanager.carparts.repository.api.PartRepository;
+import garagemanager.configuration.qualifier.PhotosDir;
 import garagemanager.crypto.component.Pbkdf2PasswordHash;
 import garagemanager.user.entity.User;
 import garagemanager.user.repository.api.UserRepository;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
+import lombok.NoArgsConstructor;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -13,15 +19,25 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+@ApplicationScoped
+@NoArgsConstructor(force = true)
 public class UserService {
     private final UserRepository repository;
+    private final PartRepository partRepository;
 
     private final Pbkdf2PasswordHash passwordHash;
 
     private final Path photoDir;
 
-    public UserService(UserRepository repository, Pbkdf2PasswordHash passwordHash, String  photoDir) {
+    @Inject
+    public UserService(
+            UserRepository repository,
+            PartRepository partRepository,
+            Pbkdf2PasswordHash passwordHash,
+            @PhotosDir String photoDir
+    ) {
         this.repository = repository;
+        this.partRepository = partRepository;
         this.passwordHash = passwordHash;
 
         Path base = Paths.get(photoDir);
@@ -59,7 +75,12 @@ public class UserService {
     }
 
     public void delete(UUID id) {
-        repository.delete(id);
+        repository.find(id).ifPresent(user -> {
+            List<Part> userParts = partRepository.findAllByUser(user);
+            userParts.forEach(partRepository::delete);
+
+            repository.delete(user);
+        });
     }
 
     public boolean verify(String login, String password) {

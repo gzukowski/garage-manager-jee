@@ -2,6 +2,7 @@ package garagemanager.serialization.component;
 
 import lombok.SneakyThrows;
 import lombok.extern.java.Log;
+import jakarta.enterprise.context.Dependent;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -18,6 +19,7 @@ import java.io.Serializable;
  * without external libraries is serialization mechanism.
  */
 @Log
+@Dependent
 public class CloningUtility {
 
     /**

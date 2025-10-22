@@ -10,16 +10,19 @@ import garagemanager.user.dto.request.PutUserRequest;
 import garagemanager.user.dto.response.GetUserResponse;
 import garagemanager.user.dto.response.GetUsersResponse;
 import garagemanager.user.service.UserService;
-import garagemanager.user.entity.User;
+import jakarta.enterprise.context.RequestScoped;
+import jakarta.inject.Inject;
 
 import java.io.InputStream;
 import java.util.UUID;
 
+@RequestScoped
 public class UserControllerImpl implements UserController {
 
     private final UserService service;
     private final DtoFunctionFactory factory;
 
+    @Inject
     public UserControllerImpl(UserService service, DtoFunctionFactory factory) {
         this.service = service;
         this.factory = factory;
