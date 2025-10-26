@@ -30,4 +30,9 @@ public class Car implements Serializable {
     private int productionYear;
     private FuelType fuelType;
     private double mileage;
+
+    @Builder.Default
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
+    private List<Part> parts = new ArrayList<>();
 }

@@ -29,6 +29,10 @@ public class Part implements Serializable {
     private double price;
     private LocalDateTime addedDate;
     private PartCondition condition;
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
     private Car car;
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
     private User user;
 }
