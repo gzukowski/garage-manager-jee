@@ -12,9 +12,9 @@ public interface  PartController {
 
     GetPartsResponse getParts();
 
-    GetPartsResponse getCarCharacters(UUID id);
+    GetPartsResponse getCarParts(UUID id);
 
-    GetPartsResponse getUserCharacters(UUID id);
+    GetPartsResponse getUserParts(UUID id);
 
     GetPartResponse getPart(UUID uuid);
 
@@ -23,10 +23,4 @@ public interface  PartController {
     void patchPart(UUID id, PatchPartRequest request);
 
     void deletePart(UUID id);
-
-    byte[] getPartPhoto(UUID id);
-
-    void putCharacterPhoto(UUID id, InputStream portrait);
-
-
 }
