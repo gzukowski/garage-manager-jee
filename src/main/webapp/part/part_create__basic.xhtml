@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="jakarta.faces.html"
+                xmlns:ui="jakarta.faces.facelets"
+                xmlns:f="jakarta.faces.core"
+                template="/WEB-INF/template/main.xhtml">
+
+    <f:metadata>
+        <f:viewAction action="#{partCreate.init()}"/>
+    </f:metadata>
+
+    <ui:define name="content">
+        <article>
+            <header><h2>Create part - basic information</h2></header>
+            <h:form styleClass="container" onreset="onReset()" enctype="multipart/form-data">
+                <div class="row">
+                    <div class="col-4 p-2">
+                        <div class="form-outline">
+                            <h:inputText id="name" value="#{partCreate.part.name}" styleClass="form-control"/>
+                            <h:outputLabel for="name" value="Name:" styleClass="form-label"/>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-4 p-2">
+                        <div class="form-outline">
+                            <h:inputText id="price" value="#{partCreate.part.price}" styleClass="form-control"/>
+                            <h:outputLabel for="price" value="Price:" styleClass="form-label"/>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-4 p-2">
+                        <div class="form-outline">
+                            <h:inputTextarea id="description" value="#{partCreate.part.description}"
+                                             styleClass="form-control" rows="4"/>
+                            <h:outputLabel for="description" value="Description:" styleClass="form-label"/>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-4 p-2">
+                        <div class="form-outline">
+                            <h:selectOneMenu id="car" value="#{partCreate.part.car}" converter="carConverter"
+                                             styleClass="form-select">
+                                <f:selectItem itemLabel="-- Select car --" itemValue="#{null}" noSelectionOption="true"/>
+                                <f:selectItems value="#{partCreate.cars}" var="c"
+                                               itemLabel="#{c.brand} #{c.name} (#{c.productionYear})"
+                                               itemValue="#{c}"/>
+                            </h:selectOneMenu>
+                            <h:outputLabel for="car" value="Car:" styleClass="form-label"/>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-4 p-2">
+                        <div class="form-outline">
+                            <h:selectOneMenu id="condition" value="#{partCreate.part.condition}"
+                                             converter="partConditionConverter"
+                                             styleClass="form-select">
+                                <f:selectItem itemLabel="-- Select condition --" itemValue="#{null}" noSelectionOption="true"/>
+                                <f:selectItems value="#{partConditionView.values}" var="cond"
+                                               itemLabel="#{cond}" itemValue="#{cond}"/>
+                            </h:selectOneMenu>
+                            <h:outputLabel for="condition" value="Condition:" styleClass="form-label"/>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row mt-3">
+                    <div class="col-2 p-2 text-center">
+                        <h:commandButton styleClass="btn btn-primary" value="Create"
+                                         action="#{partCreate.saveAction()}"/>
+                    </div>
+                    <div class="col-2 p-2 text-center">
+                        <h:commandButton styleClass="btn btn-secondary" value="Cancel"
+                                         action="#{partCreate.cancelAction()}"/>
+                    </div>
+                </div>
+            </h:form>
+        </article>
+    </ui:define>
+
+</ui:composition>
+

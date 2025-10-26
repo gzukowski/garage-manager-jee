@@ -37,15 +37,10 @@ public class ModelFunctionFactory {
         return new UpdatePartWithModelFunction();
     }
 
-//
-//    /**
-//     * Returns a function to convert a single {@link CharacterModel} to {@link Character}.
-//     *
-//     * @return new instance
-//     */
-//    public ModelToCharacterFunction modelToCharacter() {
-//        return new ModelToCharacterFunction();
-//    }
+
+    public ModelToPartFunction modelToPart() {
+        return new ModelToPartFunction();
+    }
 //
 //
 //    /**
