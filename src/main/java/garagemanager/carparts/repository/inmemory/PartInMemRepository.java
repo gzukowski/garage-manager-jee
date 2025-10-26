@@ -36,6 +36,7 @@ public class PartInMemRepository implements PartRepository {
 
     @Override
     public void create(Part entity) {
+        System.out.println("Repo create " +  entity);
         store.createPart(entity);
     }
 
@@ -46,6 +47,7 @@ public class PartInMemRepository implements PartRepository {
 
     @Override
     public void update(Part entity) {
+        System.out.println("Repo update " +  entity);
         store.updatePart(entity);
     }
 

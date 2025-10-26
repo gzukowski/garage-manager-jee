@@ -1,9 +1,6 @@
 package garagemanager.component;
 
-import garagemanager.carparts.model.function.CarToModelFunction;
-import garagemanager.carparts.model.function.CarsToModelFunction;
-import garagemanager.carparts.model.function.PartToModelFunction;
-import garagemanager.carparts.model.function.PartsToModelFunction;
+import garagemanager.carparts.model.function.*;
 import jakarta.enterprise.context.ApplicationScoped;
 
 import java.util.function.Function;
@@ -32,14 +29,14 @@ public class ModelFunctionFactory {
         return new PartsToModelFunction();
     }
 
-//    /**
-//     * Returns a function to convert a single {@link Character} to {@link CharacterEditModel}.
-//     *
-//     * @return new instance
-//     */
-//    public CharacterToEditModelFunction characterToEditModel() {
-//        return new CharacterToEditModelFunction();
-//    }
+    public PartToEditModelFunction partToEditModel() {
+        return new PartToEditModelFunction();
+    }
+
+    public UpdatePartWithModelFunction updatePart() {
+        return new UpdatePartWithModelFunction();
+    }
+
 //
 //    /**
 //     * Returns a function to convert a single {@link CharacterModel} to {@link Character}.
@@ -61,13 +58,5 @@ public class ModelFunctionFactory {
 //    }
 //
 //
-//    /**
-//     * Returns a function to update a {@link Character}.
-//     *
-//     * @return UpdateCharacterFunction instance
-//     */
-//    public UpdateCharacterWithModelFunction updateCharacter() {
-//        return new UpdateCharacterWithModelFunction();
-//    }
 
 }

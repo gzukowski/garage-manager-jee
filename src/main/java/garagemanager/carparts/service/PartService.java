@@ -77,6 +77,8 @@ public class PartService {
         part.setCar(existingCar);
         part.setUser(existingUser);
 
+        System.out.println("Part " + part);
+
         if (part.getAddedDate() == null) {
             part.setAddedDate(LocalDateTime.now());
         }

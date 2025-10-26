@@ -83,11 +83,10 @@ public class DataStorage {
                 .collect(Collectors.toList());
     }
 
-    public synchronized void createPart(Part value) {
+    public synchronized void createPart(Part value) throws IllegalArgumentException {
         if (parts.stream().anyMatch(part -> part.getId().equals(value.getId()))) {
             throw new IllegalArgumentException("The part id \"%s\" is not unique".formatted(value.getId()));
         }
-
         Part entity = cloneWithRelationships(value);
         parts.add(entity);
 
@@ -101,19 +100,29 @@ public class DataStorage {
 
     public synchronized void updatePart(Part value) {
         Part entity = cloneWithRelationships(value);
+        Part existing = parts.stream()
+                .filter(part -> part.getId().equals(value.getId()))
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException(
+                        "The part with id \"%s\" does not exist".formatted(value.getId())));
 
-        parts.removeIf(part -> part.getId().equals(value.getId()));
+        if (existing.getCar() != null) {
+            cars.stream()
+                    .filter(car -> car.getId().equals(existing.getCar().getId()))
+                    .findFirst()
+                    .ifPresent(car -> car.getParts().removeIf(p -> p.getId().equals(existing.getId())));
+        }
+
+        parts.remove(existing);
         parts.add(entity);
 
         if (entity.getCar() != null) {
             cars.stream()
                     .filter(car -> car.getId().equals(entity.getCar().getId()))
                     .findFirst()
-                    .ifPresent(car -> {
-                        car.getParts().removeIf(p -> p.getId().equals(entity.getId()));
-                        car.getParts().add(entity);
-                    });
+                    .ifPresent(car -> car.getParts().add(entity));
         }
+
     }
 
     public synchronized void deletePart(UUID id) {
@@ -158,7 +167,6 @@ public class DataStorage {
                 .findFirst()
                 .orElseThrow(() -> new IllegalArgumentException("The user with id \"%s\" does not exist".formatted(id)));
 
-        // usuwamy części przypisane do usera
         List<Part> userParts = parts.stream()
                 .filter(part -> part.getUser() != null && part.getUser().getId().equals(id))
                 .collect(Collectors.toList());
@@ -168,22 +176,37 @@ public class DataStorage {
     }
 
     private Part cloneWithRelationships(Part value) {
+        System.out.println("[cloneWithRelationships] Starting to clone part: " + value);
+
         Part entity = cloningUtility.clone(value);
+        System.out.println("[cloneWithRelationships] Created clone: " + entity);
 
         if (entity.getUser() != null) {
+            System.out.println("[cloneWithRelationships] Looking for user with ID: " + entity.getUser().getId());
             entity.setUser(users.stream()
                     .filter(user -> user.getId().equals(entity.getUser().getId()))
                     .findFirst()
-                    .orElseThrow(() -> new IllegalArgumentException("No user with id \"%s\".".formatted(entity.getUser().getId()))));
+                    .orElseThrow(() -> new IllegalArgumentException(
+                            "No user with id \"%s\".".formatted(entity.getUser().getId()))));
+            System.out.println("[cloneWithRelationships] Set user: " + entity.getUser());
+        } else {
+            System.out.println("[cloneWithRelationships] No related user found.");
         }
 
         if (entity.getCar() != null) {
+            System.out.println("[cloneWithRelationships] Looking for car with ID: " + entity.getCar().getId());
             entity.setCar(cars.stream()
                     .filter(car -> car.getId().equals(entity.getCar().getId()))
                     .findFirst()
-                    .orElseThrow(() -> new IllegalArgumentException("No car with id \"%s\".".formatted(entity.getCar().getId()))));
+                    .orElseThrow(() -> new IllegalArgumentException(
+                            "No car with id \"%s\".".formatted(entity.getCar().getId()))));
+            System.out.println("[cloneWithRelationships] Set car: " + entity.getCar());
+        } else {
+            System.out.println("[cloneWithRelationships] No related car found.");
         }
 
+        System.out.println("[cloneWithRelationships] Returning cloned entity: " + entity);
         return entity;
     }
+
 }

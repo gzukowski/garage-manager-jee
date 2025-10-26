@@ -1,13 +1,17 @@
-package garagemanager.carparts.dto.function;
+package garagemanager.carparts.model.function;
 
-import garagemanager.carparts.dto.request.PatchPartRequest;
 import garagemanager.carparts.entity.Part;
+import garagemanager.carparts.model.PartEditModel;
+import lombok.SneakyThrows;
+
+import java.io.Serializable;
 import java.util.function.BiFunction;
 
-public class RequestUpdatePartFunction implements BiFunction<Part, PatchPartRequest, Part> {
+public class UpdatePartWithModelFunction implements BiFunction<Part, PartEditModel, Part>, Serializable {
+
     @Override
-    public Part apply(Part entity, PatchPartRequest request) {
-        System.out.println("Function "+ entity);
+    @SneakyThrows
+    public Part apply(Part entity, PartEditModel request) {
         return Part.builder()
                 .id(entity.getId())
                 .name(request.getName())
@@ -16,7 +20,8 @@ public class RequestUpdatePartFunction implements BiFunction<Part, PatchPartRequ
                 .addedDate(entity.getAddedDate())
                 .condition(entity.getCondition())
                 .car(entity.getCar())
+                .user(entity.getUser())
                 .build();
     }
-
 }
+
