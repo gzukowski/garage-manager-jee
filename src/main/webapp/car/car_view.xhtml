@@ -47,25 +47,38 @@
                 </div>
 
                 <div class="row mt-4">
-                    <div class="col-12">
-                        <h3>Available parts</h3>
-
-                        <h:dataTable value="#{carView.car.parts}" var="part" styleClass="table table-striped">
-                            <h:column>
-                                <f:facet name="header">ID</f:facet>
-                                <h:outputText value="#{part.id}" />
-                            </h:column>
+                    <h:panelGroup rendered="#{not empty carView.car.parts}">
+                        <h:dataTable value="#{carView.car.parts}" var="part"
+                                     styleClass="table align-middle mb-0 bg-white"
+                                     headerClass="bg-light">
 
                             <h:column>
                                 <f:facet name="header">Name</f:facet>
-                                <h:outputText value="#{part.name}" />
+                                <h:outputText value="#{part.name}"/>
+                            </h:column>
+
+                            <h:column>
+                                <f:facet name="header">View</f:facet>
+                                <h:link outcome="/part/part_view.xhtml" value="View">
+                                    <f:param name="id" value="#{part.id}"/>
+                                </h:link>
+                            </h:column>
+
+                            <h:column>
+                                <f:facet name="header">Delete</f:facet>
+                                <h:form>
+                                    <h:commandButton value="Delete"
+                                                     styleClass="btn"
+                                                     action="#{carView.deletePartAction(part)}"
+                                    />
+                                </h:form>
                             </h:column>
                         </h:dataTable>
+                    </h:panelGroup>
 
-                        <h:panelGroup rendered="#{empty carView.car.parts}">
-                            <p><em>No parts assigned to this car.</em></p>
-                        </h:panelGroup>
-                    </div>
+                    <h:panelGroup rendered="#{empty carView.car.parts}">
+                        <p><em>No parts assigned to this car.</em></p>
+                    </h:panelGroup>
                 </div>
             </div>
         </article>

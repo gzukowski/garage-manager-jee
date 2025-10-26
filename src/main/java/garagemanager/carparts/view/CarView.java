@@ -3,6 +3,7 @@ package garagemanager.carparts.view;
 import garagemanager.carparts.entity.Car;
 import garagemanager.carparts.model.CarModel;
 import garagemanager.carparts.service.CarService;
+import garagemanager.carparts.service.PartService;
 import garagemanager.component.ModelFunctionFactory;
 import jakarta.faces.context.FacesContext;
 import jakarta.faces.view.ViewScoped;
@@ -25,6 +26,7 @@ import java.util.UUID;
 public class CarView implements Serializable {
 
     private final CarService service;
+    private final PartService partService;
     private final ModelFunctionFactory factory;
 
     /**
@@ -44,8 +46,9 @@ public class CarView implements Serializable {
      * @param factory factory producing functions for conversion between models and entities
      */
     @Inject
-    public CarView(CarService service, ModelFunctionFactory factory) {
+    public CarView(CarService service, PartService partService,ModelFunctionFactory factory) {
         this.service = service;
+        this.partService = partService;
         this.factory = factory;
     }
 
@@ -59,6 +62,15 @@ public class CarView implements Serializable {
             this.car = factory.carToModel().apply(car.get());
         } else {
             FacesContext.getCurrentInstance().getExternalContext().responseSendError(HttpServletResponse.SC_NOT_FOUND, "Car not found");
+        }
+    }
+
+    public String deletePartAction(CarModel.Part part) {
+        try {
+            partService.delete(part.getId());
+            return "car_view?faces-redirect=true&amp;id=" + id.toString();
+        } catch (IllegalArgumentException e) {
+            return null;
         }
     }
 
