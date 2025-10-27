@@ -12,12 +12,18 @@
     <ui:define name="content">
         <article>
             <header><h2>Create part - basic information</h2></header>
+
             <h:form styleClass="container" onreset="onReset()" enctype="multipart/form-data">
+
+                <h:messages globalOnly="true" style="color:red; font-weight:bold; margin-bottom:10px;" />
+
                 <div class="row">
                     <div class="col-4 p-2">
                         <div class="form-outline">
-                            <h:inputText id="name" value="#{partCreate.part.name}" styleClass="form-control"/>
+                            <h:inputText id="name" value="#{partCreate.part.name}" styleClass="form-control" required="true"
+                                         requiredMessage="Name is required."/>
                             <h:outputLabel for="name" value="Name:" styleClass="form-label"/>
+                            <h:message for="name" style="color:red; font-size:0.9em;" />
                         </div>
                     </div>
                 </div>
@@ -25,8 +31,12 @@
                 <div class="row">
                     <div class="col-4 p-2">
                         <div class="form-outline">
-                            <h:inputText id="price" value="#{partCreate.part.price}" styleClass="form-control"/>
+                            <h:inputText id="price" value="#{partCreate.part.price}" styleClass="form-control" required="true"
+                                         requiredMessage="Price is required.">
+                                <f:convertNumber />
+                            </h:inputText>
                             <h:outputLabel for="price" value="Price:" styleClass="form-label"/>
+                            <h:message for="price" style="color:red; font-size:0.9em;" />
                         </div>
                     </div>
                 </div>
@@ -37,6 +47,7 @@
                             <h:inputTextarea id="description" value="#{partCreate.part.description}"
                                              styleClass="form-control" rows="4"/>
                             <h:outputLabel for="description" value="Description:" styleClass="form-label"/>
+                            <h:message for="description" style="color:red; font-size:0.9em;" />
                         </div>
                     </div>
                 </div>
@@ -45,13 +56,15 @@
                     <div class="col-4 p-2">
                         <div class="form-outline">
                             <h:selectOneMenu id="car" value="#{partCreate.part.car}" converter="carConverter"
-                                             styleClass="form-select">
+                                             styleClass="form-select" required="true"
+                                             requiredMessage="Please select a car.">
                                 <f:selectItem itemLabel="-- Select car --" itemValue="#{null}" noSelectionOption="true"/>
                                 <f:selectItems value="#{partCreate.cars}" var="c"
                                                itemLabel="#{c.brand} #{c.name} (#{c.productionYear})"
                                                itemValue="#{c}"/>
                             </h:selectOneMenu>
                             <h:outputLabel for="car" value="Car:" styleClass="form-label"/>
+                            <h:message for="car" style="color:red; font-size:0.9em;" />
                         </div>
                     </div>
                 </div>
@@ -61,12 +74,14 @@
                         <div class="form-outline">
                             <h:selectOneMenu id="condition" value="#{partCreate.part.condition}"
                                              converter="partConditionConverter"
-                                             styleClass="form-select">
+                                             styleClass="form-select" required="true"
+                                             requiredMessage="Please select condition.">
                                 <f:selectItem itemLabel="-- Select condition --" itemValue="#{null}" noSelectionOption="true"/>
                                 <f:selectItems value="#{partConditionView.values}" var="cond"
                                                itemLabel="#{cond}" itemValue="#{cond}"/>
                             </h:selectOneMenu>
                             <h:outputLabel for="condition" value="Condition:" styleClass="form-label"/>
+                            <h:message for="condition" style="color:red; font-size:0.9em;" />
                         </div>
                     </div>
                 </div>
@@ -86,4 +101,3 @@
     </ui:define>
 
 </ui:composition>
-
