@@ -9,10 +9,7 @@ import garagemanager.carparts.entity.Part;
 import garagemanager.serialization.component.CloningUtility;
 import garagemanager.user.entity.User;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Log
@@ -39,14 +36,20 @@ public class DataStorage {
                 .collect(Collectors.toList());
     }
 
-    public synchronized void createCar(Car value) throws IllegalArgumentException {
+    public synchronized void createCar(Car value) {
         if (cars.stream().anyMatch(car -> car.getId().equals(value.getId()))) {
             throw new IllegalArgumentException("The car id \"%s\" is not unique".formatted(value.getId()));
         }
-        cars.add(cloningUtility.clone(value));
+
+        Car entity = cloningUtility.clone(value);
+        if (entity.getParts() == null) {
+            entity.setParts(new ArrayList<>());
+        }
+
+        cars.add(entity);
     }
 
-    public synchronized void updateCar(Car value) throws IllegalArgumentException {
+    public synchronized void updateCar(Car value) {
         Car existing = cars.stream()
                 .filter(car -> car.getId().equals(value.getId()))
                 .findFirst()
@@ -57,18 +60,22 @@ public class DataStorage {
         existing.setProductionYear(value.getProductionYear());
         existing.setFuelType(value.getFuelType());
         existing.setMileage(value.getMileage());
+        if (value.getParts() != null) {
+            existing.setParts(value.getParts());
+        }
     }
 
-    public synchronized void deleteCar(UUID id) throws IllegalArgumentException {
+    public synchronized void deleteCar(UUID id) {
         Car carToDelete = cars.stream()
                 .filter(car -> car.getId().equals(id))
                 .findFirst()
                 .orElseThrow(() -> new IllegalArgumentException("The car with id \"%s\" does not exist".formatted(id)));
 
         parts.removeIf(part -> part.getCar() != null && part.getCar().getId().equals(id));
-
         cars.remove(carToDelete);
     }
+
+    // === PARTS ===
 
     public synchronized List<Part> findAllParts() {
         return parts.stream()
@@ -82,22 +89,59 @@ public class DataStorage {
         }
         Part entity = cloneWithRelationships(value);
         parts.add(entity);
+
+        if (entity.getCar() != null) {
+            cars.stream()
+                    .filter(car -> car.getId().equals(entity.getCar().getId()))
+                    .findFirst()
+                    .ifPresent(car -> car.getParts().add(entity));
+        }
     }
 
-    public synchronized void updatePart(Part value) throws IllegalArgumentException {
+    public synchronized void updatePart(Part value) {
         Part entity = cloneWithRelationships(value);
-        if (parts.removeIf(part -> part.getId().equals(value.getId()))) {
-            parts.add(entity);
-        } else {
-            throw new IllegalArgumentException("The part with id \"%s\" does not exist".formatted(value.getId()));
+        Part existing = parts.stream()
+                .filter(part -> part.getId().equals(value.getId()))
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException(
+                        "The part with id \"%s\" does not exist".formatted(value.getId())));
+
+        if (existing.getCar() != null) {
+            cars.stream()
+                    .filter(car -> car.getId().equals(existing.getCar().getId()))
+                    .findFirst()
+                    .ifPresent(car -> car.getParts().removeIf(p -> p.getId().equals(existing.getId())));
         }
+
+        parts.remove(existing);
+        parts.add(entity);
+
+        if (entity.getCar() != null) {
+            cars.stream()
+                    .filter(car -> car.getId().equals(entity.getCar().getId()))
+                    .findFirst()
+                    .ifPresent(car -> car.getParts().add(entity));
+        }
+
     }
 
-    public synchronized void deletePart(UUID id) throws IllegalArgumentException {
-        if (!parts.removeIf(part -> part.getId().equals(id))) {
-            throw new IllegalArgumentException("The part with id \"%s\" does not exist".formatted(id));
+    public synchronized void deletePart(UUID id) {
+        Part partToDelete = parts.stream()
+                .filter(part -> part.getId().equals(id))
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("The part with id \"%s\" does not exist".formatted(id)));
+
+        if (partToDelete.getCar() != null) {
+            cars.stream()
+                    .filter(car -> car.getId().equals(partToDelete.getCar().getId()))
+                    .findFirst()
+                    .ifPresent(car -> car.getParts().removeIf(p -> p.getId().equals(id)));
         }
+
+        parts.remove(partToDelete);
     }
+
+    // === USERS ===
 
     public synchronized List<User> findAllUsers() {
         return users.stream()
@@ -105,22 +149,19 @@ public class DataStorage {
                 .collect(Collectors.toList());
     }
 
-    public synchronized void createUser(User value) throws IllegalArgumentException {
-        if (users.stream().anyMatch(part -> part.getId().equals(value.getId()))) {
+    public synchronized void createUser(User value) {
+        if (users.stream().anyMatch(user -> user.getId().equals(value.getId()))) {
             throw new IllegalArgumentException("The user id \"%s\" is not unique".formatted(value.getId()));
         }
         users.add(cloningUtility.clone(value));
     }
 
-    public synchronized void updateUser(User value) throws IllegalArgumentException {
-        if (users.removeIf(u -> u.getId().equals(value.getId()))) {
-            users.add(cloningUtility.clone(value));
-        } else {
-            throw new IllegalArgumentException("The user with id \"%s\" does not exist".formatted(value.getId()));
-        }
+    public synchronized void updateUser(User value) {
+        users.removeIf(u -> u.getId().equals(value.getId()));
+        users.add(cloningUtility.clone(value));
     }
 
-    public synchronized void deleteUser(UUID id) throws IllegalArgumentException {
+    public synchronized void deleteUser(UUID id) {
         User userToDelete = users.stream()
                 .filter(user -> user.getId().equals(id))
                 .findFirst()
@@ -131,27 +172,41 @@ public class DataStorage {
                 .collect(Collectors.toList());
 
         parts.removeAll(userParts);
-
         users.remove(userToDelete);
     }
 
     private Part cloneWithRelationships(Part value) {
+        System.out.println("[cloneWithRelationships] Starting to clone part: " + value);
+
         Part entity = cloningUtility.clone(value);
+        System.out.println("[cloneWithRelationships] Created clone: " + entity);
 
         if (entity.getUser() != null) {
+            System.out.println("[cloneWithRelationships] Looking for user with ID: " + entity.getUser().getId());
             entity.setUser(users.stream()
-                    .filter(user -> user.getId().equals(value.getUser().getId()))
+                    .filter(user -> user.getId().equals(entity.getUser().getId()))
                     .findFirst()
-                    .orElseThrow(() -> new IllegalArgumentException("No user with id \"%s\".".formatted(value.getUser().getId()))));
+                    .orElseThrow(() -> new IllegalArgumentException(
+                            "No user with id \"%s\".".formatted(entity.getUser().getId()))));
+            System.out.println("[cloneWithRelationships] Set user: " + entity.getUser());
+        } else {
+            System.out.println("[cloneWithRelationships] No related user found.");
         }
 
         if (entity.getCar() != null) {
+            System.out.println("[cloneWithRelationships] Looking for car with ID: " + entity.getCar().getId());
             entity.setCar(cars.stream()
-                    .filter(car -> car.getId().equals(value.getCar().getId()))
+                    .filter(car -> car.getId().equals(entity.getCar().getId()))
                     .findFirst()
-                    .orElseThrow(() -> new IllegalArgumentException("No car with id \"%s\".".formatted(value.getCar().getId()))));
+                    .orElseThrow(() -> new IllegalArgumentException(
+                            "No car with id \"%s\".".formatted(entity.getCar().getId()))));
+            System.out.println("[cloneWithRelationships] Set car: " + entity.getCar());
+        } else {
+            System.out.println("[cloneWithRelationships] No related car found.");
         }
 
+        System.out.println("[cloneWithRelationships] Returning cloned entity: " + entity);
         return entity;
     }
+
 }

@@ -137,38 +137,6 @@ public class InitializedData {
                 .build();
         partService.create(grill, opel, admin);
 
-        System.out.println("=== Uzytkownicy ===");
-        userService.findAll().forEach(user ->
-                System.out.printf("ID: %s | Login: %s | Email: %s%n",
-                        user.getId(), user.getLogin(), user.getEmail())
-        );
-
-        System.out.println("\n=== Samochody ===");
-        carService.findAll().forEach(car ->
-                System.out.printf("ID: %s | Brand: %s | Name: %s | Year: %d%n",
-                        car.getId(), car.getBrand(), car.getName(), car.getProductionYear())
-        );
-
-        System.out.println("\n=== Czesci ===");
-        partService.findAll().forEach(part -> {
-            String owner = part.getUser() != null ? part.getUser().getLogin() : "Brak";
-            String car = part.getCar() != null ? part.getCar().getName() : "Brak";
-            System.out.printf("ID: %s | Nazwa: %s | Wlasciciel: %s | Samochod: %s%n",
-                    part.getId(), part.getName(), owner, car);
-        });
-
-        System.out.println("\nUsuwanie części: " + tires.getName());
-        partService.delete(tires.getId());
-
-        System.out.println("\nCzesci po usunieciu:");
-        partService.findAll().forEach(part -> {
-            String owner = part.getUser() != null ? part.getUser().getLogin() : "Brak";
-            String car = part.getCar() != null ? part.getCar().getName() : "Brak";
-            System.out.printf("ID: %s | Nazwa: %s | Wlasciciel: %s | Samochod: %s%n",
-                    part.getId(), part.getName(), owner, car);
-        });
-
-
         requestContextController.deactivate();
     }
 

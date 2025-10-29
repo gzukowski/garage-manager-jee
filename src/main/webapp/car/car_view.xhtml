@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="jakarta.faces.html"
+                xmlns:ui="jakarta.faces.facelets"
+                xmlns:f="jakarta.faces.core"
+                template="/WEB-INF/template/main.xhtml">
+
+    <f:metadata>
+        <f:viewParam name="id" value="#{carView.id}" required="true"/>
+        <f:viewAction action="#{carView.init()}"/>
+    </f:metadata>
+
+    <ui:define name="content">
+        <article>
+            <header><h2><h:outputText value="#{carView.car.brand} #{carView.car.name}"/></h2></header>
+            <div class="container">
+                <div class="row">
+                    <div class="col-4">
+                        <div class="row mb-2">
+                            <div class="col-6">
+                                Production year
+                            </div>
+                            <div class="col-6">
+                                <h:outputText value="#{carView.car.productionYear}"/>
+                            </div>
+                        </div>
+
+                        <div class="row mb-2">
+                            <div class="col-6">
+                                Fuel
+                            </div>
+                            <div class="col-6">
+                                <h:outputText value="#{carView.car.fuelType}"/>
+                            </div>
+                        </div>
+
+                        <div class="row mb-2">
+                            <div class="col-6">
+                                Mileage
+                            </div>
+                            <div class="col-6">
+                                <h:outputText value="#{carView.car.mileage}"/>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="row mt-4">
+                    <h:panelGroup rendered="#{not empty carView.car.parts}">
+                        <h:dataTable value="#{carView.car.parts}" var="part"
+                                     styleClass="table align-middle mb-0 bg-white"
+                                     headerClass="bg-light">
+
+                            <h:column>
+                                <f:facet name="header">Name</f:facet>
+                                <h:outputText value="#{part.name}"/>
+                            </h:column>
+
+                            <h:column>
+                                <f:facet name="header">View</f:facet>
+                                <h:link outcome="/part/part_view.xhtml" value="View">
+                                    <f:param name="id" value="#{part.id}"/>
+                                </h:link>
+                            </h:column>
+
+                            <h:column>
+                                <f:facet name="header">Edit</f:facet>
+                                <h:link outcome="/part/part_edit.xhtml" value="Edit">
+                                    <f:param name="id" value="#{part.id}"/>
+                                </h:link>
+                            </h:column>
+
+                            <h:column>
+                                <f:facet name="header">Delete</f:facet>
+                                <h:form>
+                                    <h:commandButton value="Delete"
+                                                     styleClass="btn"
+                                                     action="#{carView.deletePartAction(part)}"
+                                    />
+                                </h:form>
+                            </h:column>
+                        </h:dataTable>
+                    </h:panelGroup>
+
+                    <h:panelGroup rendered="#{empty carView.car.parts}">
+                        <p><em>No parts assigned to this car.</em></p>
+                    </h:panelGroup>
+                </div>
+            </div>
+        </article>
+    </ui:define>
+
+</ui:composition>
