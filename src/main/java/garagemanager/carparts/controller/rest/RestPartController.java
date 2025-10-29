@@ -84,13 +84,13 @@ public class RestPartController implements PartController {
 
     @Override
     @SneakyThrows
-    public void putPart(UUID id, PutPartRequest request) {
+    public void putPart(UUID car_id, UUID part_id, PutPartRequest request) {
         try {
-            service.create(factory.requestToPart().apply(id, request));
+            service.create(factory.requestToPart().apply(car_id, part_id, request));
             //This can be done with Response builder but requires method different return type.
             response.setHeader("Location", uriInfo.getBaseUriBuilder()
                     .path(PartController.class, "getPart")
-                    .build(id)
+                    .build(part_id)
                     .toString());
             //This can be done with Response builder but requires method different return type.
             //Calling HttpServletResponse#setStatus(int) is ignored.

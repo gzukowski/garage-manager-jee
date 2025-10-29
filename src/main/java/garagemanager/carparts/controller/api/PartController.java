@@ -33,9 +33,9 @@ public interface  PartController {
     GetPartResponse getPart(@PathParam("id") UUID id);
 
     @PUT
-    @Path("/parts/{id}")
+    @Path("/cars/{car_id}/parts/{part_id}")
     @Consumes({MediaType.APPLICATION_JSON})
-    void putPart(@PathParam("id") UUID id, PutPartRequest request);
+    void putPart(@PathParam("car_id") UUID car_id, @PathParam("part_id") UUID part_id, PutPartRequest request);
 
     @PATCH
     @Path("/parts/{id}")

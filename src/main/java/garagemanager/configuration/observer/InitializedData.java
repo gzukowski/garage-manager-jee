@@ -72,7 +72,7 @@ public class InitializedData {
                 Path.of("C:\\Users\\gzukowski\\IdeaProjects\\GarageManager\\src\\main\\resources\\garagemanager\\configuration\\photo\\Alice.png"));
 
         Car audi = Car.builder()
-                .id(UUID.randomUUID())
+                .id(UUID.fromString("3c6f1eb1-8069-44ab-988f-d7fed2b65d87"))
                 .name("A4")
                 .brand("Audi")
                 .productionYear(2004)
@@ -82,7 +82,7 @@ public class InitializedData {
         carService.create(audi);
 
         Car bmw = Car.builder()
-                .id(UUID.randomUUID())
+                .id(UUID.fromString("ab5700af-a130-4598-bb3d-e16233b40aa1"))
                 .name("320d")
                 .brand("BMW")
                 .productionYear(2019)
@@ -92,7 +92,7 @@ public class InitializedData {
         carService.create(bmw);
 
         Car opel = Car.builder()
-                .id(UUID.randomUUID())
+                .id(UUID.fromString("4e66cd84-25e6-4a53-ad16-0e1de1ace74e"))
                 .name("Astra H")
                 .brand("Opel")
                 .productionYear(2005)
@@ -102,7 +102,7 @@ public class InitializedData {
         carService.create(opel);
 
         Part oilFilter = Part.builder()
-                .id(UUID.randomUUID())
+                .id(UUID.fromString("a842ffcf-5dc7-43ca-831f-cb0c89479087"))
                 .name("Filtr oleju")
                 .description("Filtr oleju do silnika 2.0 TDI")
                 .price(49.99)
@@ -114,7 +114,7 @@ public class InitializedData {
         partService.create(oilFilter, audi, kevin);
 
         Part tires = Part.builder()
-                .id(UUID.randomUUID())
+                .id(UUID.fromString("3e039122-8ace-43fb-b41e-484f63ee2af2"))
                 .name("Opony zimowe")
                 .description("Zestaw 4 opon zimowych 225/45R17")
                 .price(1800.00)
@@ -126,7 +126,7 @@ public class InitializedData {
         partService.create(tires, bmw, alice);
 
         Part grill = Part.builder()
-                .id(UUID.randomUUID())
+                .id(UUID.fromString("66418204-5720-4144-98e3-44cdd1c5cfd0"))
                 .name("Grill OPC")
                 .description("Grill astra OPC zamiennik")
                 .price(1200.00)

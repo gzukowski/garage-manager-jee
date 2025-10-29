@@ -52,5 +52,13 @@ public class DtoFunctionFactory {
         return new UserToResponseFunction();
     }
 
+    public RequestToCarFunction requestToCar() {
+        return new RequestToCarFunction();
+    }
+
+    public RequestUpdateCarFunction updateCar() {
+        return new RequestUpdateCarFunction();
+    }
+
 
 }

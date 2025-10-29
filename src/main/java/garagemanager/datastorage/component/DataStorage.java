@@ -198,8 +198,10 @@ public class DataStorage {
             entity.setCar(cars.stream()
                     .filter(car -> car.getId().equals(entity.getCar().getId()))
                     .findFirst()
-                    .orElseThrow(() -> new IllegalArgumentException(
-                            "No car with id \"%s\".".formatted(entity.getCar().getId()))));
+                    .orElseThrow(() -> {
+                        System.out.println("[cloneWithRelationships] Could not find car in cars list: " + cars);
+                        return new IllegalArgumentException("No car with id ...");
+                    }));
             System.out.println("[cloneWithRelationships] Set car: " + entity.getCar());
         } else {
             System.out.println("[cloneWithRelationships] No related car found.");
