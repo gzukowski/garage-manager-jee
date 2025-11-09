@@ -1,5 +1,6 @@
 package garagemanager.carparts.entity;
 
+import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -22,8 +23,11 @@ import java.time.LocalDate;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @ToString
 @EqualsAndHashCode
+@Entity
+@Table(name = "cars")
 public class Car implements Serializable {
 
+    @Id
     private UUID id;
     private String name;
     private String brand;
@@ -31,8 +35,8 @@ public class Car implements Serializable {
     private FuelType fuelType;
     private double mileage;
 
-    @Builder.Default
-    @ToString.Exclude
+    @ToString.Exclude//It's common to exclude lists from toString
     @EqualsAndHashCode.Exclude
+    @OneToMany(mappedBy = "car", cascade = CascadeType.REMOVE)
     private List<Part> parts = new ArrayList<>();
 }

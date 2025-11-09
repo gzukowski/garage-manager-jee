@@ -8,6 +8,7 @@ import garagemanager.carparts.entity.Part;
 import garagemanager.user.repository.api.UserRepository;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
+import jakarta.transaction.Transactional;
 import lombok.NoArgsConstructor;
 
 import java.io.IOException;
@@ -50,10 +51,12 @@ public class PartService {
         return partRepository.findAllByUser(user);
     }
 
+    @Transactional
     public void create(Part part) {
         partRepository.create(part);
     }
 
+    @Transactional
     public void update(Part part) {
         partRepository.update(part);
     }
@@ -68,6 +71,7 @@ public class PartService {
                 .map(partRepository::findAllByUser);
     }
 
+    @Transactional
     public void create(Part part, Car car, User user) {
         Car existingCar = carRepository.find(car.getId())
                 .orElseThrow(() -> new IllegalArgumentException("Nie znaleziono samochodu."));
@@ -86,6 +90,7 @@ public class PartService {
         partRepository.create(part);
     }
 
+    @Transactional
     public void delete(UUID id) {
         partRepository.find(id).ifPresent(partRepository::delete);
     }

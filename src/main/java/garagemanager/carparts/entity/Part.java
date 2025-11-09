@@ -1,6 +1,7 @@
 package garagemanager.carparts.entity;
 
 import garagemanager.user.entity.User;
+import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
@@ -21,8 +22,10 @@ import java.util.UUID;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @ToString(callSuper = true)
 @EqualsAndHashCode(callSuper = false)
+@Entity
+@Table(name = "parts")
 public class Part implements Serializable {
-
+    @Id
     private UUID id;
     private String name;
     private String description;
@@ -31,8 +34,12 @@ public class Part implements Serializable {
     private PartCondition condition;
 //    @ToString.Exclude
 //    @EqualsAndHashCode.Exclude
+    @ManyToOne
+    @JoinColumn(name = "car")
     private Car car;
 //    @ToString.Exclude
 //    @EqualsAndHashCode.Exclude
+    @ManyToOne
+    @JoinColumn(name = "user_name")
     private User user;
 }

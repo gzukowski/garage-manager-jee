@@ -8,6 +8,7 @@ import garagemanager.user.entity.User;
 import garagemanager.user.repository.api.UserRepository;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
+import jakarta.transaction.Transactional;
 import lombok.NoArgsConstructor;
 
 import java.io.IOException;
@@ -65,15 +66,18 @@ public class UserService {
         return repository.findAll();
     }
 
+    @Transactional
     public void create(User user) {
         user.setPassword(passwordHash.generate(user.getPassword().toCharArray()));
         repository.create(user);
     }
 
+    @Transactional
     public void update(User user) {
         repository.update(user);
     }
 
+    @Transactional
     public void delete(UUID id) {
         repository.find(id).ifPresent(user -> {
             List<Part> userParts = partRepository.findAllByUser(user);
@@ -89,6 +93,7 @@ public class UserService {
                 .orElse(false);
     }
 
+    @Transactional
     public void updatePhoto(UUID id, InputStream photo) {
         repository.find(id).ifPresent(user -> {
             try {

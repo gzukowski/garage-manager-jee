@@ -8,6 +8,7 @@ import garagemanager.user.entity.User;
 import garagemanager.user.repository.api.UserRepository;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
+import jakarta.transaction.Transactional;
 import lombok.NoArgsConstructor;
 
 import java.util.ArrayList;
@@ -39,14 +40,17 @@ public class CarService {
         return repository.findAll();
     }
 
+    @Transactional
     public void create(Car car) {
         repository.create(car);
     }
 
+    @Transactional
     public void update(Car car) {
         repository.update(car);
     }
 
+    @Transactional
     public void delete(UUID carId) {
         repository.find(carId).ifPresent(car -> {
             List<Part> partsToDelete = partRepository.findAllByCar(car);
