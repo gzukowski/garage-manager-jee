@@ -52,11 +52,6 @@ public class PartService {
     }
 
     @Transactional
-    public void create(Part part) {
-        partRepository.create(part);
-    }
-
-    @Transactional
     public void update(Part part) {
         partRepository.update(part);
     }
@@ -72,22 +67,25 @@ public class PartService {
     }
 
     @Transactional
-    public void create(Part part, Car car, User user) {
-        Car existingCar = carRepository.find(car.getId())
-                .orElseThrow(() -> new IllegalArgumentException("Nie znaleziono samochodu."));
-        User existingUser = userRepository.find(user.getId())
-                .orElseThrow(() -> new IllegalArgumentException("Nie znaleziono użytkownika."));
-
-        part.setCar(existingCar);
-        part.setUser(existingUser);
-
+    public void create(Part part) {
         System.out.println("Part " + part);
 
-        if (part.getAddedDate() == null) {
-            part.setAddedDate(LocalDateTime.now());
+        if (partRepository.find(part.getId()).isPresent()) {
+            throw new IllegalArgumentException("Part already exists.");
         }
-
+//        if (userRepository.find(message.getUser().getId()).isEmpty()) {
+//            throw new IllegalArgumentException("User does not exists.");
+//        }
+        if (carRepository.find(part.getCar().getId()).isEmpty()) {
+            throw new IllegalArgumentException("Car does not exists.");
+        }
         partRepository.create(part);
+
+        /* Both sides of relationship must be handled (if accessed) because of cache. */
+        carRepository.find(part.getCar().getId())
+                .ifPresent(c -> c.getParts().add(part));
+//        userRepository.find(message.getUser().getId())
+//                .ifPresent(u -> u.getMessages().add(message));
     }
 
     @Transactional
