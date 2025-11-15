@@ -66,3 +66,109 @@ Content-Type: application/json
 
 ###
 DELETE http://localhost:9080/garage-manager/api/v1/users/c461d210-8cea-4213-a19a-3cb856351d57
+
+
+
+# --------------------------------------------------------------
+
+###
+
+# Get all cars.
+
+GET http://localhost:9080/garage-manager/api/v1/cars
+
+###
+
+# Get single car.
+
+GET http://localhost:9080/garage-manager/api/v1/cars/4e66cd84-25e6-4a53-ad16-0e1de1ace74e
+
+###
+
+# Get single car's parts.
+
+GET http://localhost:9080/garage-manager/api/v1/cars/4e66cd84-25e6-4a53-ad16-0e1de1ace74e/parts
+
+###
+
+# Get single car not existing one.
+
+GET http://localhost:9080/garage-manager/api/v1/cars/b8400f6c-b300-4558-bd8c-beb920010078
+
+###
+
+PUT http://localhost:9080/garage-manager/api/v1/cars/b8400f6c-b300-4558-bd8c-beb920010078
+Content-Type: application/json
+
+{
+  "name": "Corsa",
+  "brand": "Opel",
+  "productionYear": 2008,
+  "fuelType": "PETROL",
+  "mileage" : 300000
+}
+
+###
+
+PATCH http://localhost:9080/garage-manager/api/v1/cars/4e66cd84-25e6-4a53-ad16-0e1de1ace74e
+Content-Type: application/json
+
+{
+  "mileage" : 300001
+}
+
+###
+
+DELETE http://localhost:9080/garage-manager/api/v1/cars/ab5700af-a130-4598-bb3d-e16233b40aa1
+
+###
+
+
+# Get all parts.
+
+GET http://localhost:9080/garage-manager/api/v1/parts
+
+###
+
+# Get single part.
+
+GET http://localhost:9080/garage-manager/api/v1/parts/66418204-5720-4144-98e3-44cdd1c5cfd0
+
+###
+
+# Get single part. Not existing, created later.
+
+GET http://localhost:9080/garage-manager/api/v1/parts/3c6f1eb1-8069-44ab-988f-d7fed2b65d87
+
+
+###
+# Create new part.
+
+PUT http://localhost:9080/garage-manager/api/v1/cars/ab5700af-a130-4598-bb3d-e16233b40aa1/parts/3c6f1eb1-8069-44ab-988f-d7fed2b65d87
+Content-Type: application/json
+
+{
+  "name": "Felgi 18",
+  "condition": "USED",
+  "price": 15,
+  "description": "Aluminiowe felgi"
+}
+
+###
+
+# Update part.
+
+PATCH http://localhost:9080/garage-manager/api/v1/parts/3c6f1eb1-8069-44ab-988f-d7fed2b65d87
+Content-Type: application/json
+
+{
+  "price": 999,
+  "description": "Updated desc"
+}
+
+
+###
+
+# Delete part.
+
+DELETE http://localhost:9080/garage-manager/api/v1/parts/66418204-5720-4144-98e3-44cdd1c5cfd0

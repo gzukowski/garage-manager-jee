@@ -7,21 +7,21 @@ import garagemanager.carparts.entity.Part;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.UUID;
-import java.util.function.BiFunction;
 
-public class RequestToPartFunction implements BiFunction<UUID, PutPartRequest, Part> {
+public class RequestToPartFunction implements TriFunction<UUID, UUID, PutPartRequest, Part> {
     @Override
-    public Part apply(UUID id, PutPartRequest request) {
+    public Part apply(UUID car_id, UUID part_id, PutPartRequest request) {
         return Part.builder()
-                .id(id)
+                .id(part_id)
                 .name(request.getName())
                 .description(request.getDescription())
                 .price(request.getPrice())
                 .addedDate(LocalDateTime.now(ZoneId.of("Europe/Warsaw")))
                 .condition(request.getCondition())
                 .car(Car.builder()
-                        .id(request.getCar().getId())
-                        .build())
+                        .id(car_id)
+                        .build()
+                )
                 .build();
     }
 

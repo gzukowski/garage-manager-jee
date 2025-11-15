@@ -1,8 +1,6 @@
 package garagemanager.user.controller.impl;
 
 import garagemanager.component.DtoFunctionFactory;
-import garagemanager.controller.servlet.exception.BadRequestException;
-import garagemanager.controller.servlet.exception.NotFoundException;
 import garagemanager.user.controller.api.UserController;
 import garagemanager.user.dto.request.PatchUserRequest;
 import garagemanager.user.dto.request.PutPasswordRequest;
@@ -12,6 +10,8 @@ import garagemanager.user.dto.response.GetUsersResponse;
 import garagemanager.user.service.UserService;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
+import jakarta.ws.rs.BadRequestException;
+import jakarta.ws.rs.NotFoundException;
 
 import java.io.InputStream;
 import java.util.UUID;

@@ -13,6 +13,8 @@ public class CarToResponseFunction implements Function<Car, GetCarResponse> {
                 .name(entity.getName())
                 .brand(entity.getBrand())
                 .productionYear(entity.getProductionYear())
+                .mileage(entity.getMileage())
+                .fuelType(entity.getFuelType())
                 .build();
     }
 

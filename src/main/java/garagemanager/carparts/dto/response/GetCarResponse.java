@@ -1,5 +1,6 @@
 package garagemanager.carparts.dto.response;
 
+import garagemanager.carparts.entity.FuelType;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -23,4 +24,6 @@ public class GetCarResponse {
     private String name;
     private String brand;
     private int productionYear;
+    private double mileage;
+    private FuelType fuelType;
 }

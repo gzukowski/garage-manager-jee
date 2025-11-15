@@ -1,6 +1,6 @@
 package garagemanager.carparts.dto.request;
 
-import garagemanager.carparts.entity.PartCondition;
+import garagemanager.carparts.entity.FuelType;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -17,11 +17,12 @@ import lombok.ToString;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @ToString
 @EqualsAndHashCode
-public class PutPartRequest {
+public class PutCarRequest {
     private String name;
-    private String description;
-    private double price;
-    private PartCondition condition;
+    private String brand;
+    private int productionYear;
+    private FuelType fuelType;
+    private double mileage;
 }
 
 

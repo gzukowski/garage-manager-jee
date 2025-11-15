@@ -17,8 +17,6 @@ import lombok.ToString;
 @ToString
 @EqualsAndHashCode
 public class PatchPartRequest {
-    private String name;
     private double price;
     private String description;
-
 }
