@@ -32,13 +32,11 @@ public class Part implements Serializable {
     private double price;
     private LocalDateTime addedDate;
     private PartCondition condition;
-//    @ToString.Exclude
-//    @EqualsAndHashCode.Exclude
+
     @ManyToOne
     @JoinColumn(name = "car")
     private Car car;
-//    @ToString.Exclude
-//    @EqualsAndHashCode.Exclude
+
     @ManyToOne
     @JoinColumn(name = "user_name")
     private User user;

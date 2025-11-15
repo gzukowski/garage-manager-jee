@@ -38,6 +38,5 @@ public class Car implements Serializable {
     @ToString.Exclude//It's common to exclude lists from toString
     @EqualsAndHashCode.Exclude
     @OneToMany(mappedBy = "car", cascade = CascadeType.REMOVE)
-    @Builder.Default
-    private List<Part> parts = new ArrayList<>();
+    private List<Part> parts;
 }

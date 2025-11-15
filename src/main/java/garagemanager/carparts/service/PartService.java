@@ -14,6 +14,7 @@ import lombok.NoArgsConstructor;
 import java.io.IOException;
 import java.io.InputStream;
 import java.time.LocalDateTime;
+import java.util.IllegalFormatCodePointException;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -84,13 +85,22 @@ public class PartService {
         /* Both sides of relationship must be handled (if accessed) because of cache. */
         carRepository.find(part.getCar().getId())
                 .ifPresent(c -> c.getParts().add(part));
-//        userRepository.find(message.getUser().getId())
+//      userRepository.find(message.getUser().getId())
 //                .ifPresent(u -> u.getMessages().add(message));
     }
 
     @Transactional
     public void delete(UUID id) {
-        partRepository.find(id).ifPresent(partRepository::delete);
+        Optional<Part> optionalPart = partRepository.find(id);
+
+        if  (optionalPart.isPresent()) {
+            Part part = optionalPart.get();
+
+            carRepository
+                    .find(part.getCar().getId())
+                    .ifPresent(car -> car.getParts().remove(part));
+            partRepository.delete(part);
+        }
     }
 
 }
