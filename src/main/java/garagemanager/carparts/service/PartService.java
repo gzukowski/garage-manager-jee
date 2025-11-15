@@ -8,11 +8,13 @@ import garagemanager.carparts.entity.Part;
 import garagemanager.user.repository.api.UserRepository;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
+import jakarta.transaction.Transactional;
 import lombok.NoArgsConstructor;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.time.LocalDateTime;
+import java.util.IllegalFormatCodePointException;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -50,10 +52,7 @@ public class PartService {
         return partRepository.findAllByUser(user);
     }
 
-    public void create(Part part) {
-        partRepository.create(part);
-    }
-
+    @Transactional
     public void update(Part part) {
         partRepository.update(part);
     }
@@ -68,26 +67,40 @@ public class PartService {
                 .map(partRepository::findAllByUser);
     }
 
-    public void create(Part part, Car car, User user) {
-        Car existingCar = carRepository.find(car.getId())
-                .orElseThrow(() -> new IllegalArgumentException("Nie znaleziono samochodu."));
-        User existingUser = userRepository.find(user.getId())
-                .orElseThrow(() -> new IllegalArgumentException("Nie znaleziono użytkownika."));
-
-        part.setCar(existingCar);
-        part.setUser(existingUser);
-
+    @Transactional
+    public void create(Part part) {
         System.out.println("Part " + part);
 
-        if (part.getAddedDate() == null) {
-            part.setAddedDate(LocalDateTime.now());
+        if (partRepository.find(part.getId()).isPresent()) {
+            throw new IllegalArgumentException("Part already exists.");
         }
-
+//        if (userRepository.find(message.getUser().getId()).isEmpty()) {
+//            throw new IllegalArgumentException("User does not exists.");
+//        }
+        if (carRepository.find(part.getCar().getId()).isEmpty()) {
+            throw new IllegalArgumentException("Car does not exists.");
+        }
         partRepository.create(part);
+
+        /* Both sides of relationship must be handled (if accessed) because of cache. */
+        carRepository.find(part.getCar().getId())
+                .ifPresent(c -> c.getParts().add(part));
+//      userRepository.find(message.getUser().getId())
+//                .ifPresent(u -> u.getMessages().add(message));
     }
 
+    @Transactional
     public void delete(UUID id) {
-        partRepository.find(id).ifPresent(partRepository::delete);
+        Optional<Part> optionalPart = partRepository.find(id);
+
+        if  (optionalPart.isPresent()) {
+            Part part = optionalPart.get();
+
+            carRepository
+                    .find(part.getCar().getId())
+                    .ifPresent(car -> car.getParts().remove(part));
+            partRepository.delete(part);
+        }
     }
 
 }
