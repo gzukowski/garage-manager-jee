@@ -1,6 +1,7 @@
 package garagemanager.user.service;
 
 import garagemanager.auth.SecurityUtils;
+import garagemanager.carparts.entity.Car;
 import garagemanager.carparts.entity.Part;
 import garagemanager.carparts.repository.api.PartRepository;
 import garagemanager.configuration.qualifier.PhotosDir;
@@ -66,6 +67,11 @@ public class UserService {
         }
     }
 
+    @PermitAll
+    public Optional<User> initFind(String login) {
+        return repository.findByLogin(login);
+    }
+
     @RolesAllowed(UserRoles.ADMIN)
     public Optional<User> find(UUID id) {
         return repository.find(id);
@@ -73,6 +79,7 @@ public class UserService {
 
     @RolesAllowed(UserRoles.ADMIN)
     public Optional<User> find(String login) {
+        System.out.println("FIIIIIIIIND" + login);
         return repository.findByLogin(login);
     }
 

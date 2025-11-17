@@ -64,7 +64,7 @@ public class RestPartController implements PartController {
 
     @Override
     public GetPartsResponse getParts() {
-        return factory.partsToResponse().apply(service.findAll());
+        return factory.partsToResponse().apply(service.findAllForCurrentUser());
     }
 
     @Override

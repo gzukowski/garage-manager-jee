@@ -112,12 +112,19 @@ public class RestCarController implements CarController {
 
     @Override
     public void deleteCar(UUID id) {
-        service.find(id).ifPresentOrElse(
-                entity -> service.delete(id),
-                () -> {
-                    throw new NotFoundException();
-                }
-        );
+        try {
+            service.find(id).ifPresentOrElse(
+                    entity -> service.delete(id),
+                    () -> {
+                        throw new NotFoundException();
+                    }
+            );
+        } catch (IllegalArgumentException ex) {
+            throw new BadRequestException(ex);
+        } catch (SecurityException | EJBAccessException e) {
+            log.log(Level.WARNING, "Unauthorized: ", e);
+            throw new WebApplicationException("Unauthorized", Response.Status.FORBIDDEN);
+        }
     }
 
 

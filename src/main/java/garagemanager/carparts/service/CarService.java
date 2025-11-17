@@ -6,6 +6,7 @@ import garagemanager.carparts.repository.api.CarRepository;
 import garagemanager.carparts.repository.api.PartRepository;
 import garagemanager.user.entity.UserRoles;
 import garagemanager.user.repository.api.UserRepository;
+import jakarta.annotation.security.PermitAll;
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.ejb.LocalBean;
 import jakarta.ejb.Stateless;
@@ -58,5 +59,10 @@ public class CarService {
     @RolesAllowed(UserRoles.ADMIN)
     public void delete(UUID carId) {
         repository.delete(repository.find(carId).orElseThrow());
+    }
+
+    @PermitAll
+    public void initCreate(Car car) {
+        repository.create(car);
     }
 }

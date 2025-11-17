@@ -37,8 +37,4 @@
         <fileset dir="${wlp.install.dir}/usr/servers/defaultServer/lib/global/" includes="h2-2.2.220.jar"/>
     </library>
 
-    <basicRegistry id="basic">
-        <user name="admin-service" password="adminadmin"/>
-    </basicRegistry>
-
 </server>

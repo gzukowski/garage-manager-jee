@@ -30,10 +30,10 @@ public interface UserController {
     @Consumes({MediaType.APPLICATION_JSON})
     void putUser(@PathParam("id") UUID id, PutUserRequest request);
 
-    @PUT
-    @Path("/users/{id}")
-    @Consumes({MediaType.APPLICATION_JSON})
-    void putUserPassword(@PathParam("id") UUID id, PutPasswordRequest request);
+//    @PUT
+//    @Path("/users/{id}")
+//    @Consumes({MediaType.APPLICATION_JSON})
+//    void putUserPassword(@PathParam("id") UUID id, PutPasswordRequest request);
 
     @PATCH
     @Path("/users/{id}")

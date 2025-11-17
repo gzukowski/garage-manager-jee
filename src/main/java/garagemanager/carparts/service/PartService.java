@@ -7,6 +7,7 @@ import garagemanager.user.entity.User;
 import garagemanager.carparts.entity.Part;
 import garagemanager.user.entity.UserRoles;
 import garagemanager.user.repository.api.UserRepository;
+import jakarta.annotation.security.PermitAll;
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.ejb.EJBAccessException;
 import jakarta.ejb.LocalBean;
@@ -47,11 +48,28 @@ public class PartService {
 
     @RolesAllowed(UserRoles.USER)
     public Optional<Part> find(UUID id) {
-        return partRepository.find(id);
+        Optional<Part> part = partRepository.find(id);
+
+        SecurityUtils.checkOwnership(
+                part,
+                p -> p.getUser().getLogin(),
+                securityContext
+        );
+
+        return part;
     }
 
+    @RolesAllowed(UserRoles.USER)
     public Optional<Part> find(User user, UUID id) {
-        return partRepository.findByIdAndUser(id, user);
+        Optional<Part> part = partRepository.findByIdAndUser(id, user);
+
+        SecurityUtils.checkOwnership(
+                part,
+                p -> p.getUser().getLogin(),
+                securityContext
+        );
+
+        return part;
     }
 
     @RolesAllowed(UserRoles.USER)
@@ -65,11 +83,34 @@ public class PartService {
     }
 
     @RolesAllowed(UserRoles.USER)
+    public List<Part> findAllForCurrentUser() {
+        var principal = securityContext.getCallerPrincipal();
+        if (principal == null) {
+            throw new EJBAccessException("Brak zalogowanego użytkownika.");
+        }
+
+        boolean isAdmin = securityContext.isCallerInRole(UserRoles.ADMIN);
+
+        if (isAdmin) {
+            return partRepository.findAll();
+        }
+
+        Optional<User> user = userRepository.findByLogin(principal.getName());
+
+        if (user.isEmpty()) {
+            throw new IllegalArgumentException("Użytkownik nie istnieje.");
+        }
+
+        return partRepository.findAllByUser(user.get());
+    }
+
+    @RolesAllowed(UserRoles.USER)
     public Optional<List<Part>> findAllByCar(UUID id) {
         return carRepository.find(id)
                 .map(partRepository::findAllByCar);
     }
 
+    @RolesAllowed(UserRoles.USER)
     public Optional<List<Part>> findAllByUser(UUID id) {
         return userRepository.find(id)
                 .map(partRepository::findAllByUser);
@@ -88,6 +129,30 @@ public class PartService {
     @RolesAllowed(UserRoles.ADMIN)
     public void create(Part part) {
         System.out.println("Part " + part);
+
+        if (partRepository.find(part.getId()).isPresent()) {
+            throw new IllegalArgumentException("Part already exists.");
+        }
+
+        if (userRepository.find(part.getUser().getId()).isEmpty()) {
+            throw new IllegalArgumentException("User does not exists.");
+        }
+
+        if (carRepository.find(part.getCar().getId()).isEmpty()) {
+            throw new IllegalArgumentException("Car does not exists.");
+        }
+        partRepository.create(part);
+
+        /* Both sides of relationship must be handled (if accessed) because of cache. */
+        carRepository.find(part.getCar().getId())
+                .ifPresent(c -> c.getParts().add(part));
+        userRepository.find(part.getUser().getId())
+                .ifPresent(u -> u.getParts().add(part));
+    }
+
+    @PermitAll
+    public void initCreate(Part part) {
+        System.out.println("Init create Part " + part);
 
         if (partRepository.find(part.getId()).isPresent()) {
             throw new IllegalArgumentException("Part already exists.");

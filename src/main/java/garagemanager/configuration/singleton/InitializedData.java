@@ -67,8 +67,10 @@ public class InitializedData {
     @PostConstruct
     @SneakyThrows
     private void init() {
-        if (userService.find("admin").isEmpty()) {
+        System.out.println("Init initialized");
 
+        if (userService.initFind("admin").isEmpty()) {
+            System.out.println("NIE MA ADMINA");
             User admin = createUserWithPhoto(UUID.fromString("c4804e0f-769e-4ab9-9ebe-0578fb4f00a6"),
                     "admin", "System", "Admin", LocalDate.of(1990, 10, 21),
                     "admin@simplerpg.example.com", "adminadmin",
@@ -114,9 +116,9 @@ public class InitializedData {
                     .mileage(230_000)
                     .build();
 
-            carService.create(audi);
-            carService.create(bmw);
-            carService.create(opel);
+            carService.initCreate(audi);
+            carService.initCreate(bmw);
+            carService.initCreate(opel);
 
             Part oilFilter = Part.builder()
                     .id(UUID.fromString("a842ffcf-5dc7-43ca-831f-cb0c89479087"))
@@ -152,9 +154,9 @@ public class InitializedData {
                     .user(admin)
                     .build();
 
-            partService.create(oilFilter);
-            partService.create(grill);
-            partService.create(tires);
+            partService.initCreate(oilFilter);
+            partService.initCreate(grill);
+            partService.initCreate(tires);
         }
     }
 

@@ -87,6 +87,8 @@ public class RestUserController implements UserController {
     @Override
     @SneakyThrows
     public void putUser(UUID id, PutUserRequest request) {
+
+        System.out.println("request put user:" + request);
         try {
             service.create(factory.requestToUser().apply(id, request));
             //This can be done with Response builder but requires method different return type.
@@ -130,11 +132,11 @@ public class RestUserController implements UserController {
         );
     }
 
-    @Override
-    public void putUserPassword(UUID id, PutPasswordRequest request) {
-        // TODO implement actual logic
-        throw new BadRequestException();
-    }
+//    @Override
+//    public void putUserPassword(UUID id, PutPasswordRequest request) {
+//        // TODO implement actual logic
+//        throw new BadRequestException();
+//    }
 
     @Override
     public byte[] getUserPhoto(UUID id) {
