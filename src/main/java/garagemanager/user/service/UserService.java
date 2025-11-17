@@ -1,15 +1,20 @@
 package garagemanager.user.service;
 
+import garagemanager.auth.SecurityUtils;
 import garagemanager.carparts.entity.Part;
 import garagemanager.carparts.repository.api.PartRepository;
 import garagemanager.configuration.qualifier.PhotosDir;
-import garagemanager.crypto.component.Pbkdf2PasswordHash;
 import garagemanager.user.entity.User;
+import garagemanager.user.entity.UserRoles;
 import garagemanager.user.repository.api.UserRepository;
+import jakarta.annotation.security.PermitAll;
+import jakarta.annotation.security.RolesAllowed;
 import jakarta.ejb.LocalBean;
 import jakarta.ejb.Stateless;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
+import jakarta.security.enterprise.SecurityContext;
+import jakarta.security.enterprise.identitystore.Pbkdf2PasswordHash;
 import jakarta.transaction.Transactional;
 import lombok.NoArgsConstructor;
 
@@ -28,7 +33,7 @@ import java.util.UUID;
 public class UserService {
     private final UserRepository repository;
     private final PartRepository partRepository;
-
+    private final SecurityContext securityContext;
     private final Pbkdf2PasswordHash passwordHash;
 
     private final Path photoDir;
@@ -37,18 +42,22 @@ public class UserService {
     public UserService(
             UserRepository repository,
             PartRepository partRepository,
-            Pbkdf2PasswordHash passwordHash,
-            @PhotosDir String photoDir
+            @SuppressWarnings("CdiInjectionPointsInspection") Pbkdf2PasswordHash passwordHash,
+            @SuppressWarnings("CdiInjectionPointsInspection") SecurityContext securityContext
+//            @PhotosDir String photoDir
     ) {
         this.repository = repository;
         this.partRepository = partRepository;
         this.passwordHash = passwordHash;
+        this.securityContext = securityContext;
 
-        Path base = Paths.get(photoDir);
-        if (!base.isAbsolute()) {
-            base = Paths.get(System.getProperty("user.dir")).resolve(photoDir);
-        }
-        this.photoDir = base.normalize().toAbsolutePath();
+        //photoDir = Path.of("photos");
+//
+//        Path base = Paths.get(photoDir);
+//        if (!base.isAbsolute()) {
+//            base = Paths.get(System.getProperty("user.dir")).resolve(photoDir);
+//        }
+        this.photoDir = Path.of("photos");//base.normalize().toAbsolutePath();
 
         try {
             Files.createDirectories(this.photoDir);
@@ -57,30 +66,38 @@ public class UserService {
         }
     }
 
+    @RolesAllowed(UserRoles.ADMIN)
     public Optional<User> find(UUID id) {
         return repository.find(id);
     }
 
+    @RolesAllowed(UserRoles.ADMIN)
     public Optional<User> find(String login) {
         return repository.findByLogin(login);
     }
 
+    @RolesAllowed(UserRoles.ADMIN)
     public List<User> findAll() {
         return repository.findAll();
     }
 
-    @Transactional
+    @PermitAll
     public void create(User user) {
         user.setPassword(passwordHash.generate(user.getPassword().toCharArray()));
         repository.create(user);
     }
 
-    @Transactional
+    @RolesAllowed(UserRoles.USER)
     public void update(User user) {
+        SecurityUtils.checkOwnership(
+                Optional.ofNullable(user),
+                u -> u.getLogin(),
+                securityContext
+        );
         repository.update(user);
     }
 
-    @Transactional
+    @RolesAllowed(UserRoles.USER)
     public void delete(UUID id) {
         repository.find(id).ifPresent(user -> {
             List<Part> userParts = partRepository.findAllByUser(user);
@@ -90,13 +107,14 @@ public class UserService {
         });
     }
 
+    @PermitAll
     public boolean verify(String login, String password) {
         return find(login)
                 .map(user -> passwordHash.verify(password.toCharArray(), user.getPassword()))
                 .orElse(false);
     }
 
-    @Transactional
+    @RolesAllowed(UserRoles.USER)
     public void updatePhoto(UUID id, InputStream photo) {
         repository.find(id).ifPresent(user -> {
             try {
@@ -113,6 +131,8 @@ public class UserService {
         });
     }
 
+
+    @RolesAllowed(UserRoles.USER)
     public byte[] getPhoto(UUID id) {
         return repository.find(id).map(user -> {
             String storedPath = user.getPhotoPath();
@@ -133,6 +153,7 @@ public class UserService {
         }).orElse(new byte[0]);
     }
 
+    @RolesAllowed(UserRoles.USER)
     public void deletePhoto(UUID id) {
         repository.find(id).ifPresent(user -> {
             String storedPath = user.getPhotoPath();

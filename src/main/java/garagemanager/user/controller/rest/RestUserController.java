@@ -17,8 +17,10 @@ import garagemanager.user.dto.request.PutUserRequest;
 import garagemanager.user.dto.response.GetUserResponse;
 import garagemanager.user.dto.response.GetUsersResponse;
 import garagemanager.user.service.UserService;
+import jakarta.ejb.EJB;
 import jakarta.inject.Inject;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.transaction.TransactionalException;
 import jakarta.ws.rs.BadRequestException;
 import jakarta.ws.rs.NotFoundException;
 import jakarta.ws.rs.Path;
@@ -27,14 +29,17 @@ import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.UriInfo;
 import lombok.SneakyThrows;
+import lombok.extern.java.Log;
 
 import java.io.InputStream;
 import java.util.UUID;
+import java.util.logging.Level;
 
 @Path("")
+@Log
 public class RestUserController implements UserController {
 
-    private final UserService service;
+    private UserService service;
 
     private final DtoFunctionFactory factory;
 
@@ -54,13 +59,16 @@ public class RestUserController implements UserController {
 
     @Inject
     public RestUserController(
-            UserService service,
             DtoFunctionFactory factory,
             @SuppressWarnings("CdiInjectionPointsInspection") UriInfo uriInfo
     ) {
-        this.service = service;
         this.factory = factory;
         this.uriInfo = uriInfo;
+    }
+
+    @EJB
+    public void setService(UserService userService) {
+        this.service = userService;
     }
 
     @Override
@@ -90,8 +98,15 @@ public class RestUserController implements UserController {
             //Calling HttpServletResponse#setStatus(int) is ignored.
             //Calling HttpServletResponse#sendError(int) causes response headers and body looking like error.
             throw new WebApplicationException(Response.Status.CREATED);
+        } catch (TransactionalException ex) {
+            if (ex.getCause() instanceof IllegalArgumentException) {
+                log.log(Level.WARNING, "User already exists: " + ex.getMessage(), ex);
+                throw new BadRequestException("User already exists", ex);
+            }
+            throw ex;
         } catch (IllegalArgumentException ex) {
-            throw new BadRequestException(ex);
+            log.log(Level.WARNING, "User already exists: " + ex.getMessage(), ex);
+            throw new BadRequestException("User already exists", ex);
         }
     }
 

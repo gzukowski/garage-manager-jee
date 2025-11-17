@@ -5,6 +5,7 @@ import garagemanager.carparts.model.PartsModel;
 import garagemanager.carparts.service.CarService;
 import garagemanager.carparts.service.PartService;
 import garagemanager.component.ModelFunctionFactory;
+import jakarta.ejb.EJB;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
 import jakarta.inject.Named;
@@ -15,7 +16,7 @@ import jakarta.inject.Named;
 public class PartList {
 
 
-    private final PartService service;
+    private PartService service;
     private PartsModel parts;
 
     /**
@@ -24,10 +25,15 @@ public class PartList {
     private final ModelFunctionFactory factory;
 
     @Inject
-    public PartList(PartService service, ModelFunctionFactory factory) {
-        this.service = service;
+    public PartList(ModelFunctionFactory factory) {
         this.factory = factory;
     }
+
+    @EJB
+    public void setService(PartService service) {
+        this.service = service;
+    }
+
 
     public PartsModel getParts() {
         if (parts == null) {

@@ -5,6 +5,7 @@ import garagemanager.carparts.model.PartCreateModel;
 import garagemanager.carparts.service.CarService;
 import garagemanager.carparts.service.PartService;
 import garagemanager.component.ModelFunctionFactory;
+import jakarta.ejb.EJB;
 import jakarta.enterprise.context.Conversation;
 import jakarta.enterprise.context.ConversationScoped;
 import jakarta.inject.Inject;
@@ -26,8 +27,8 @@ import java.util.stream.Collectors;
 public class PartCreate implements Serializable {
 
 
-    private final PartService partService;
-    private final CarService carService;
+    private PartService partService;
+    private CarService carService;
     private final ModelFunctionFactory factory;
 
     @Getter
@@ -40,15 +41,21 @@ public class PartCreate implements Serializable {
 
     @Inject
     public PartCreate(
-            PartService partService,
-            CarService carService,
             ModelFunctionFactory factory,
             Conversation conversation
     ) {
-        this.partService = partService;
         this.factory = factory;
-        this.carService = carService;
         this.conversation = conversation;
+    }
+
+    @EJB
+    public void setCarService(CarService carService) {
+        this.carService = carService;
+    }
+
+    @EJB
+    public void setPartService(PartService partService) {
+        this.partService = partService;
     }
 
     public void init() {

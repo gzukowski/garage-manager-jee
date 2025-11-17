@@ -10,13 +10,12 @@ import garagemanager.user.entity.User;
 import garagemanager.user.entity.UserRoles;
 import garagemanager.user.service.UserService;
 import jakarta.annotation.PostConstruct;
-import jakarta.ejb.EJB;
-import jakarta.ejb.Singleton;
-import jakarta.ejb.Startup;
-import jakarta.ejb.TransactionAttribute;
-import jakarta.ejb.TransactionAttributeType;
+import jakarta.annotation.security.DeclareRoles;
+import jakarta.annotation.security.RunAs;
+import jakarta.ejb.*;
 import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
+import lombok.extern.java.Log;
 
 import java.io.InputStream;
 import java.nio.file.Path;
@@ -34,6 +33,10 @@ import java.util.UUID;
 @Startup
 @TransactionAttribute(value = TransactionAttributeType.NOT_SUPPORTED)
 @NoArgsConstructor
+@DependsOn("InitializeAdminService")
+@DeclareRoles({UserRoles.ADMIN, UserRoles.USER})
+@RunAs(UserRoles.ADMIN)
+@Log
 public class InitializedData {
 
     private PartService partService;

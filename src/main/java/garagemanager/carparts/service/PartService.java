@@ -1,13 +1,18 @@
 package garagemanager.carparts.service;
 
+import garagemanager.auth.SecurityUtils;
 import garagemanager.carparts.repository.api.CarRepository;
 import garagemanager.carparts.repository.api.PartRepository;
 import garagemanager.user.entity.User;
 import garagemanager.carparts.entity.Part;
+import garagemanager.user.entity.UserRoles;
 import garagemanager.user.repository.api.UserRepository;
+import jakarta.annotation.security.RolesAllowed;
+import jakarta.ejb.EJBAccessException;
 import jakarta.ejb.LocalBean;
 import jakarta.ejb.Stateless;
 import jakarta.inject.Inject;
+import jakarta.security.enterprise.SecurityContext;
 import jakarta.transaction.Transactional;
 import lombok.NoArgsConstructor;
 
@@ -26,13 +31,21 @@ public class PartService {
 
     private final UserRepository userRepository;
 
+    private final SecurityContext securityContext;
+
     @Inject
-    public PartService(PartRepository partRepository, CarRepository carRepository, UserRepository userRepository) {
+    public PartService(PartRepository partRepository,
+                       CarRepository carRepository,
+                       UserRepository userRepository,
+                       @SuppressWarnings("CdiInjectionPointsInspection") SecurityContext securityContext
+    ) {
         this.partRepository = partRepository;
         this.carRepository = carRepository;
         this.userRepository = userRepository;
+        this.securityContext = securityContext;
     }
 
+    @RolesAllowed(UserRoles.USER)
     public Optional<Part> find(UUID id) {
         return partRepository.find(id);
     }
@@ -41,19 +54,17 @@ public class PartService {
         return partRepository.findByIdAndUser(id, user);
     }
 
+    @RolesAllowed(UserRoles.USER)
     public List<Part> findAll() {
         return partRepository.findAll();
     }
 
+    @RolesAllowed(UserRoles.USER)
     public List<Part> findAll(User user) {
         return partRepository.findAllByUser(user);
     }
 
-    @Transactional
-    public void update(Part part) {
-        partRepository.update(part);
-    }
-
+    @RolesAllowed(UserRoles.USER)
     public Optional<List<Part>> findAllByCar(UUID id) {
         return carRepository.find(id)
                 .map(partRepository::findAllByCar);
@@ -64,16 +75,28 @@ public class PartService {
                 .map(partRepository::findAllByUser);
     }
 
-    @Transactional
+    @RolesAllowed(UserRoles.USER)
+    public void update(Part part) {
+        SecurityUtils.checkOwnership(
+                Optional.ofNullable(part),
+                p -> p.getUser().getLogin(),
+                securityContext
+        );
+        partRepository.update(part);
+    }
+
+    @RolesAllowed(UserRoles.ADMIN)
     public void create(Part part) {
         System.out.println("Part " + part);
 
         if (partRepository.find(part.getId()).isPresent()) {
             throw new IllegalArgumentException("Part already exists.");
         }
-//        if (userRepository.find(message.getUser().getId()).isEmpty()) {
-//            throw new IllegalArgumentException("User does not exists.");
-//        }
+
+        if (userRepository.find(part.getUser().getId()).isEmpty()) {
+            throw new IllegalArgumentException("User does not exists.");
+        }
+
         if (carRepository.find(part.getCar().getId()).isEmpty()) {
             throw new IllegalArgumentException("Car does not exists.");
         }
@@ -82,13 +105,18 @@ public class PartService {
         /* Both sides of relationship must be handled (if accessed) because of cache. */
         carRepository.find(part.getCar().getId())
                 .ifPresent(c -> c.getParts().add(part));
-//      userRepository.find(message.getUser().getId())
-//                .ifPresent(u -> u.getMessages().add(message));
+        userRepository.find(part.getUser().getId())
+                .ifPresent(u -> u.getParts().add(part));
     }
 
-    @Transactional
+    @RolesAllowed(UserRoles.USER)
     public void delete(UUID id) {
         Optional<Part> optionalPart = partRepository.find(id);
+        SecurityUtils.checkOwnership(
+                optionalPart,
+                p -> p.getUser().getLogin(),
+                securityContext
+        );
 
         if  (optionalPart.isPresent()) {
             Part part = optionalPart.get();

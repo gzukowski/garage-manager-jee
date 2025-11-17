@@ -5,25 +5,31 @@ import garagemanager.carparts.dto.request.PatchPartRequest;
 import garagemanager.carparts.dto.request.PutPartRequest;
 import garagemanager.carparts.dto.response.GetPartResponse;
 import garagemanager.carparts.dto.response.GetPartsResponse;
+import garagemanager.carparts.entity.Part;
 import garagemanager.carparts.service.CarService;
 import garagemanager.carparts.service.PartService;
 import garagemanager.component.DtoFunctionFactory;
+import garagemanager.user.entity.UserRoles;
+import jakarta.annotation.security.RolesAllowed;
 import jakarta.ejb.EJB;
+import jakarta.ejb.EJBAccessException;
+import jakarta.ejb.EJBException;
 import jakarta.inject.Inject;
 import jakarta.servlet.http.HttpServletResponse;
-import jakarta.ws.rs.BadRequestException;
-import jakarta.ws.rs.NotFoundException;
-import jakarta.ws.rs.Path;
-import jakarta.ws.rs.WebApplicationException;
+import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.UriInfo;
 import jakarta.ws.rs.core.UriBuilder;
 import lombok.SneakyThrows;
+import lombok.extern.java.Log;
 
 import java.util.UUID;
+import java.util.logging.Level;
 
 @Path("")//Annotation required by the specification.
+@RolesAllowed(UserRoles.USER)
+@Log
 public class RestPartController implements PartController {
     private PartService service;
 
@@ -42,11 +48,6 @@ public class RestPartController implements PartController {
         this.response = response;
     }
 
-    /**
-     * @param service character service
-     * @param factory factory producing functions for conversion between DTO and entities
-     * @param uriInfo allows to create {@link UriBuilder} based on current request
-     */
     @Inject
     public RestPartController(
             DtoFunctionFactory factory,
@@ -101,15 +102,31 @@ public class RestPartController implements PartController {
             //Calling HttpServletResponse#setStatus(int) is ignored.
             //Calling HttpServletResponse#sendError(int) causes response headers and body looking like error.
             throw new WebApplicationException(Response.Status.CREATED);
-        } catch (IllegalArgumentException ex) {
-            throw new BadRequestException(ex);
+        } catch (EJBException ex) {
+            //Any unchecked exception is packed into EJBException. Business exception can be introduced here.
+            if (ex.getCause() instanceof IllegalArgumentException) {
+                log.log(Level.WARNING, ex.getMessage(), ex);
+                throw new BadRequestException(ex);
+            }
+            throw ex;
+        } catch (SecurityException e) {
+            log.log(Level.WARNING, "Unauthorized: ", e);
+            throw new WebApplicationException("Unauthorized", Response.Status.FORBIDDEN);
         }
     }
 
     @Override
     public void patchPart(UUID id, PatchPartRequest request) {
         service.find(id).ifPresentOrElse(
-                entity -> service.update(factory.updatePart().apply(entity, request)),
+                entity -> {
+                    try {
+                        Part m = factory.updatePart().apply(entity, request);
+                        service.update(m);
+                    } catch (EJBAccessException ex) {
+                        log.log(Level.WARNING, ex.getMessage(), ex);
+                        throw new ForbiddenException(ex.getMessage());
+                    }
+                },
                 () -> {
                     throw new NotFoundException();
                 }
@@ -119,7 +136,14 @@ public class RestPartController implements PartController {
     @Override
     public void deletePart(UUID id) {
         service.find(id).ifPresentOrElse(
-                entity -> service.delete(id),
+                entity -> {
+                    try {
+                        service.delete(id);
+                    } catch (EJBAccessException ex) {
+                        log.log(Level.WARNING, ex.getMessage(), ex);
+                        throw new ForbiddenException(ex.getMessage());
+                    }
+                },
                 () -> {
                     throw new NotFoundException();
                 }

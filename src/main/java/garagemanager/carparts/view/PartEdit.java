@@ -4,6 +4,7 @@ import garagemanager.carparts.entity.Part;
 import garagemanager.carparts.model.PartEditModel;
 import garagemanager.carparts.service.PartService;
 import garagemanager.component.ModelFunctionFactory;
+import jakarta.ejb.EJB;
 import jakarta.faces.context.FacesContext;
 import jakarta.faces.view.ViewScoped;
 import jakarta.inject.Inject;
@@ -23,7 +24,7 @@ import java.util.UUID;
 public class PartEdit implements Serializable {
 
 
-    private final PartService service;
+    private PartService service;
 
     private final ModelFunctionFactory factory;
 
@@ -37,9 +38,13 @@ public class PartEdit implements Serializable {
 
 
     @Inject
-    public PartEdit(PartService service, ModelFunctionFactory factory) {
-        this.service = service;
+    public PartEdit(ModelFunctionFactory factory) {
         this.factory = factory;
+    }
+
+    @EJB
+    public void setService(PartService service) {
+        this.service = service;
     }
 
     /**

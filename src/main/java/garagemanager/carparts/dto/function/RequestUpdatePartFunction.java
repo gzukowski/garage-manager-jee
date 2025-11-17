@@ -15,6 +15,7 @@ public class RequestUpdatePartFunction implements BiFunction<Part, PatchPartRequ
                 .addedDate(entity.getAddedDate())
                 .condition(entity.getCondition())
                 .car(entity.getCar())
+                .user(entity.getUser())
                 .build();
     }
 

@@ -4,10 +4,13 @@ import garagemanager.carparts.entity.Car;
 import garagemanager.carparts.entity.Part;
 import garagemanager.carparts.repository.api.CarRepository;
 import garagemanager.carparts.repository.api.PartRepository;
+import garagemanager.user.entity.UserRoles;
 import garagemanager.user.repository.api.UserRepository;
+import jakarta.annotation.security.RolesAllowed;
 import jakarta.ejb.LocalBean;
 import jakarta.ejb.Stateless;
 import jakarta.inject.Inject;
+import jakarta.security.enterprise.SecurityContext;
 import jakarta.transaction.Transactional;
 import lombok.NoArgsConstructor;
 
@@ -23,39 +26,37 @@ import java.util.stream.Collectors;
 public class CarService {
 
     private final CarRepository repository;
-    private final PartRepository partRepository;
+    private final SecurityContext securityContext;
 
     @Inject
-    public CarService(PartRepository partRepository, CarRepository carRepository, UserRepository userRepository) {
-        this.repository = carRepository;
-        this.partRepository = partRepository;
+    public CarService(CarRepository repository,
+                      @SuppressWarnings("CdiInjectionPointsInspection") SecurityContext securityContext) {
+        this.repository = repository;
+        this.securityContext = securityContext;
     }
 
+    @RolesAllowed(UserRoles.USER)
     public Optional<Car> find(UUID id) {
         return repository.find(id);
     }
 
+    @RolesAllowed(UserRoles.USER)
     public List<Car> findAll() {
         return repository.findAll();
     }
 
-    @Transactional
+    @RolesAllowed(UserRoles.ADMIN)
     public void create(Car car) {
         repository.create(car);
     }
 
-    @Transactional
+    @RolesAllowed(UserRoles.ADMIN)
     public void update(Car car) {
         repository.update(car);
     }
 
-    @Transactional
+    @RolesAllowed(UserRoles.ADMIN)
     public void delete(UUID carId) {
-        repository.find(carId).ifPresent(car -> {
-            List<Part> partsToDelete = partRepository.findAllByCar(car);
-            partsToDelete.forEach(partRepository::delete);
-
-            repository.delete(car);
-        });
+        repository.delete(repository.find(carId).orElseThrow());
     }
 }
