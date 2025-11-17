@@ -1,11 +1,12 @@
-# admin:adminadmin YWRtaW46YWRtaW5hZG1pbg==
-# kevin:useruser a2V2aW46dXNlcnVzZXI=
-# alice:useruser YWxpY2U6dXNlcnVzZXI=
+# admin:adminadmin YWRtaW46YWRtaW5hZG1pbg==     - c4804e0f-769e-4ab9-9ebe-0578fb4f00a6
+# kevin:useruser a2V2aW46dXNlcnVzZXI=           - 81e1c2a9-7f57-439b-b53d-6db88b071e4e
+# alice:useruser YWxpY2U6dXNlcnVzZXI=           - ed6cfb2a-cad7-47dd-9b56-9d1e3c7a4197
 
 ###
 //@no-cookie-jar
 GET http://localhost:9080/garage-manager/api/v1/users/
-Authorization: Basic YWRtaW46YWRtaW5hZG1pbg==
+Authorization: Basic YWRtaW46YWRtaW5hZG1pbg== #admin
+#Authorization: Basic a2V2aW46dXNlcnVzZXI= # kevin
 
 ###
 GET http://localhost:9080/garage-manager/api/v1/users/81e1c2a9-7f57-439b-b53d-6db88b071e4e
@@ -148,25 +149,46 @@ GET http://localhost:9080/garage-manager/api/v1/parts
 
 ###
 
+
+# Get users' all parts.
+
+# admin:adminadmin YWRtaW46YWRtaW5hZG1pbg==     - c4804e0f-769e-4ab9-9ebe-0578fb4f00a6
+# kevin:useruser a2V2aW46dXNlcnVzZXI=           - 81e1c2a9-7f57-439b-b53d-6db88b071e4e
+# alice:useruser YWxpY2U6dXNlcnVzZXI=           - ed6cfb2a-cad7-47dd-9b56-9d1e3c7a4197
+
+//@no-cookie-jar
+GET http://localhost:9080/garage-manager/api/v1/users/ed6cfb2a-cad7-47dd-9b56-9d1e3c7a4197/parts
+#Authorization: Basic YWRtaW46YWRtaW5hZG1pbg== #admin
+#Authorization: Basic a2V2aW46dXNlcnVzZXI= # user kevin
+Authorization: Basic YWxpY2U6dXNlcnVzZXI= # user alice
+
+
+###
+
 # Get single part.
 
 //@no-cookie-jar
 GET http://localhost:9080/garage-manager/api/v1/parts/a842ffcf-5dc7-43ca-831f-cb0c89479087
 #Authorization: Basic YWRtaW46YWRtaW5hZG1pbg== #admin
-Authorization: Basic a2V2aW46dXNlcnVzZXI= # user kevin
+#Authorization: Basic a2V2aW46dXNlcnVzZXI= # user kevin
 #Authorization: Basic YWxpY2U6dXNlcnVzZXI= # user alice
 
 ###
 
 # Get single part. Not existing, created later.
-
+//@no-cookie-jar
 GET http://localhost:9080/garage-manager/api/v1/parts/3c6f1eb1-8069-44ab-988f-d7fed2b65d87
-
+#Authorization: Basic YWRtaW46YWRtaW5hZG1pbg== #admin
+#Authorization: Basic a2V2aW46dXNlcnVzZXI= # user kevin
+Authorization: Basic YWxpY2U6dXNlcnVzZXI= # user alice
 
 ###
 # Create new part.
 //@no-cookie-jar
 PUT http://localhost:9080/garage-manager/api/v1/cars/ab5700af-a130-4598-bb3d-e16233b40aa1/parts/3c6f1eb1-8069-44ab-988f-d7fed2b65d87
+#Authorization: Basic YWRtaW46YWRtaW5hZG1pbg== #admin
+#Authorization: Basic a2V2aW46dXNlcnVzZXI= # user kevin
+Authorization: Basic YWxpY2U6dXNlcnVzZXI= # user alice
 Content-Type: application/json
 
 {
@@ -181,10 +203,13 @@ Content-Type: application/json
 # Update part.
 //@no-cookie-jar
 PATCH http://localhost:9080/garage-manager/api/v1/parts/3c6f1eb1-8069-44ab-988f-d7fed2b65d87
+#Authorization: Basic YWRtaW46YWRtaW5hZG1pbg== #admin
+#Authorization: Basic a2V2aW46dXNlcnVzZXI= # user kevin
+Authorization: Basic YWxpY2U6dXNlcnVzZXI= # user alice
 Content-Type: application/json
 
 {
-  "price": 999,
+  "price": 9929,
   "description": "Updated desc"
 }
 
@@ -194,3 +219,6 @@ Content-Type: application/json
 # Delete part.
 //@no-cookie-jar
 DELETE http://localhost:9080/garage-manager/api/v1/parts/66418204-5720-4144-98e3-44cdd1c5cfd0
+#Authorization: Basic YWRtaW46YWRtaW5hZG1pbg== #admin
+#Authorization: Basic a2V2aW46dXNlcnVzZXI= # user kevin
+#Authorization: Basic YWxpY2U6dXNlcnVzZXI= # user alice

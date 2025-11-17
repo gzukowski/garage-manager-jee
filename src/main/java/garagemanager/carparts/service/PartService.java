@@ -83,6 +83,25 @@ public class PartService {
     }
 
     @RolesAllowed(UserRoles.USER)
+    public Optional<List<Part>> findAllByUserWithAccess(UUID userId) {
+        boolean isAdmin = securityContext.isCallerInRole(UserRoles.ADMIN);
+        String login = securityContext.getCallerPrincipal().getName();
+
+        Optional<User> requestedUser = userRepository.find(userId);
+        if (requestedUser.isEmpty()) {
+            return Optional.empty();
+        }
+
+        if (!isAdmin && !requestedUser.get().getLogin().equals(login)) {
+            throw new EJBAccessException("User cannot access other user's parts.");
+        }
+
+        return Optional.of(partRepository.findAllByUser(requestedUser.get()));
+    }
+
+
+
+    @RolesAllowed(UserRoles.USER)
     public List<Part> findAllForCurrentUser() {
         var principal = securityContext.getCallerPrincipal();
         if (principal == null) {
@@ -191,6 +210,15 @@ public class PartService {
                     .ifPresent(car -> car.getParts().remove(part));
             partRepository.delete(part);
         }
+    }
+
+    @RolesAllowed(UserRoles.USER)
+    public void createForCurrentUser(Part part) {
+        User user = userRepository.findByLogin(securityContext.getCallerPrincipal().getName())
+                .orElseThrow(IllegalStateException::new);
+
+        part.setUser(user);
+        create(part);
     }
 
 }

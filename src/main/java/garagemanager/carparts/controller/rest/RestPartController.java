@@ -69,30 +69,45 @@ public class RestPartController implements PartController {
 
     @Override
     public GetPartsResponse getCarParts(UUID id) {
-        return service.findAllByCar(id)
-                .map(factory.partsToResponse())
-                .orElseThrow(NotFoundException::new);
+        try {
+            return service.findAllByCar(id)
+                    .map(factory.partsToResponse())
+                    .orElseThrow(NotFoundException::new);
+        } catch (EJBAccessException ex) {
+            log.log(Level.WARNING, ex.getMessage(), ex);
+            throw new ForbiddenException("Forbidden");
+        }
     }
 
     @Override
     public GetPartsResponse getUserParts(UUID id) {
-        return service.findAllByUser(id)
-                .map(factory.partsToResponse())
-                .orElseThrow(NotFoundException::new);
+        try {
+            return service.findAllByUserWithAccess(id)
+                    .map(factory.partsToResponse())
+                    .orElseThrow(NotFoundException::new);
+        } catch (EJBAccessException ex) {
+            log.log(Level.WARNING, ex.getMessage(), ex);
+            throw new ForbiddenException("Forbidden");
+        }
     }
 
     @Override
     public GetPartResponse getPart(UUID id) {
-        return service.find(id)
-                .map(factory.partToResponse())
-                .orElseThrow(NotFoundException::new);
+        try {
+            return service.find(id)
+                    .map(factory.partToResponse())
+                    .orElseThrow(NotFoundException::new);
+        } catch (EJBAccessException ex) {
+            log.log(Level.WARNING, ex.getMessage(), ex);
+            throw new ForbiddenException("Forbidden");
+        }
     }
 
     @Override
     @SneakyThrows
     public void putPart(UUID car_id, UUID part_id, PutPartRequest request) {
         try {
-            service.create(factory.requestToPart().apply(car_id, part_id, request));
+            service.createForCurrentUser(factory.requestToPart().apply(car_id, part_id, request));
             //This can be done with Response builder but requires method different return type.
             response.setHeader("Location", uriInfo.getBaseUriBuilder()
                     .path(PartController.class, "getPart")
@@ -117,37 +132,47 @@ public class RestPartController implements PartController {
 
     @Override
     public void patchPart(UUID id, PatchPartRequest request) {
-        service.find(id).ifPresentOrElse(
-                entity -> {
-                    try {
-                        Part m = factory.updatePart().apply(entity, request);
-                        service.update(m);
-                    } catch (EJBAccessException ex) {
-                        log.log(Level.WARNING, ex.getMessage(), ex);
-                        throw new ForbiddenException(ex.getMessage());
+        try {
+            service.find(id).ifPresentOrElse(
+                    entity -> {
+                        try {
+                            Part m = factory.updatePart().apply(entity, request);
+                            service.update(m);
+                        } catch (EJBAccessException ex) {
+                            log.log(Level.WARNING, ex.getMessage(), ex);
+                            throw new ForbiddenException(ex.getMessage());
+                        }
+                    },
+                    () -> {
+                        throw new NotFoundException();
                     }
-                },
-                () -> {
-                    throw new NotFoundException();
-                }
-        );
+            );
+        } catch (EJBAccessException ex) {
+            log.log(Level.WARNING, ex.getMessage(), ex);
+            throw new ForbiddenException(ex.getMessage());
+        }
     }
 
     @Override
     public void deletePart(UUID id) {
-        service.find(id).ifPresentOrElse(
-                entity -> {
-                    try {
-                        service.delete(id);
-                    } catch (EJBAccessException ex) {
-                        log.log(Level.WARNING, ex.getMessage(), ex);
-                        throw new ForbiddenException(ex.getMessage());
+        try {
+            service.find(id).ifPresentOrElse(
+                    entity -> {
+                        try {
+                            service.delete(id);
+                        } catch (EJBAccessException ex) {
+                            log.log(Level.WARNING, ex.getMessage(), ex);
+                            throw new ForbiddenException(ex.getMessage());
+                        }
+                    },
+                    () -> {
+                        throw new NotFoundException();
                     }
-                },
-                () -> {
-                    throw new NotFoundException();
-                }
-        );
+            );
+        } catch (EJBAccessException ex) {
+            log.log(Level.WARNING, ex.getMessage(), ex);
+            throw new ForbiddenException(ex.getMessage());
+        }
     }
 
 
