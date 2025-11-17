@@ -5,8 +5,10 @@ import garagemanager.carparts.dto.request.PatchPartRequest;
 import garagemanager.carparts.dto.request.PutPartRequest;
 import garagemanager.carparts.dto.response.GetPartResponse;
 import garagemanager.carparts.dto.response.GetPartsResponse;
+import garagemanager.carparts.service.CarService;
 import garagemanager.carparts.service.PartService;
 import garagemanager.component.DtoFunctionFactory;
+import jakarta.ejb.EJB;
 import jakarta.inject.Inject;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.ws.rs.BadRequestException;
@@ -23,7 +25,7 @@ import java.util.UUID;
 
 @Path("")//Annotation required by the specification.
 public class RestPartController implements PartController {
-    private final PartService service;
+    private PartService service;
 
     private final DtoFunctionFactory factory;
 
@@ -47,13 +49,16 @@ public class RestPartController implements PartController {
      */
     @Inject
     public RestPartController(
-            PartService service,
             DtoFunctionFactory factory,
             @SuppressWarnings("CdiInjectionPointsInspection") UriInfo uriInfo
     ) {
-        this.service = service;
         this.factory = factory;
         this.uriInfo = uriInfo;
+    }
+
+    @EJB
+    public void setService(PartService service) {
+        this.service = service;
     }
 
     @Override

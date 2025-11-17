@@ -4,9 +4,9 @@ import garagemanager.carparts.entity.Car;
 import garagemanager.carparts.entity.Part;
 import garagemanager.carparts.repository.api.CarRepository;
 import garagemanager.carparts.repository.api.PartRepository;
-import garagemanager.user.entity.User;
 import garagemanager.user.repository.api.UserRepository;
-import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.ejb.LocalBean;
+import jakarta.ejb.Stateless;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import lombok.NoArgsConstructor;
@@ -17,19 +17,18 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-@ApplicationScoped
+@LocalBean
+@Stateless
 @NoArgsConstructor(force = true)
 public class CarService {
 
     private final CarRepository repository;
     private final PartRepository partRepository;
-    private final UserRepository userRepository;
 
     @Inject
     public CarService(PartRepository partRepository, CarRepository carRepository, UserRepository userRepository) {
         this.repository = carRepository;
         this.partRepository = partRepository;
-        this.userRepository = userRepository;
     }
 
     public Optional<Car> find(UUID id) {

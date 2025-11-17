@@ -1,26 +1,23 @@
 package garagemanager.carparts.service;
 
-import garagemanager.carparts.entity.Car;
 import garagemanager.carparts.repository.api.CarRepository;
 import garagemanager.carparts.repository.api.PartRepository;
 import garagemanager.user.entity.User;
 import garagemanager.carparts.entity.Part;
 import garagemanager.user.repository.api.UserRepository;
-import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.ejb.LocalBean;
+import jakarta.ejb.Stateless;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import lombok.NoArgsConstructor;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.time.LocalDateTime;
-import java.util.IllegalFormatCodePointException;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-@ApplicationScoped
+@LocalBean
+@Stateless
 @NoArgsConstructor(force = true)
 public class PartService {
     private final PartRepository partRepository;

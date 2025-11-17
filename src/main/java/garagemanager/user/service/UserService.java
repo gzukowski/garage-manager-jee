@@ -6,6 +6,8 @@ import garagemanager.configuration.qualifier.PhotosDir;
 import garagemanager.crypto.component.Pbkdf2PasswordHash;
 import garagemanager.user.entity.User;
 import garagemanager.user.repository.api.UserRepository;
+import jakarta.ejb.LocalBean;
+import jakarta.ejb.Stateless;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
@@ -20,7 +22,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-@ApplicationScoped
+@LocalBean
+@Stateless
 @NoArgsConstructor(force = true)
 public class UserService {
     private final UserRepository repository;
