@@ -1,25 +1,19 @@
 package garagemanager.carparts.service;
 
 import garagemanager.carparts.entity.Car;
-import garagemanager.carparts.entity.Part;
 import garagemanager.carparts.repository.api.CarRepository;
-import garagemanager.carparts.repository.api.PartRepository;
 import garagemanager.user.entity.UserRoles;
-import garagemanager.user.repository.api.UserRepository;
 import jakarta.annotation.security.PermitAll;
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.ejb.LocalBean;
 import jakarta.ejb.Stateless;
 import jakarta.inject.Inject;
 import jakarta.security.enterprise.SecurityContext;
-import jakarta.transaction.Transactional;
 import lombok.NoArgsConstructor;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 @LocalBean
 @Stateless
