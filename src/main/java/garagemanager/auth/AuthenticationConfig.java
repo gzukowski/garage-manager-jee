@@ -22,19 +22,19 @@ import jakarta.security.enterprise.identitystore.Pbkdf2PasswordHash;
  * Both form based methods required {@link LoginToContinue} configuration.
  */
 @ApplicationScoped
-@BasicAuthenticationMechanismDefinition(realmName = "Garage manager")
+//@BasicAuthenticationMechanismDefinition(realmName = "Garage manager")
 //@FormAuthenticationMechanismDefinition(
 //        loginToContinue = @LoginToContinue(
-//                loginPage = "/authentication/form/login.xhtml",
-//                errorPage = "/authentication/form/login_error.xhtml"
+//                loginPage = "/auth/form/login.xhtml",
+//                errorPage = "/auth/form/login_error.xhtml"
 //        )
 //)
-//@CustomFormAuthenticationMechanismDefinition(
-//        loginToContinue = @LoginToContinue(
-//                loginPage = "/authentication/custom/login.xhtml",
-//                errorPage = "/authentication/custom/login_error.xhtml"
-//        )
-//)
+@CustomFormAuthenticationMechanismDefinition(
+        loginToContinue = @LoginToContinue(
+                loginPage = "/auth/custom/login.xhtml",
+                errorPage = "/auth/custom/login_error.xhtml"
+        )
+)
 @DatabaseIdentityStoreDefinition(
         dataSourceLookup = "jdbc/GarageManagerParts",
         callerQuery = "select password from users where login = ?",

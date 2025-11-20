@@ -37,12 +37,16 @@
                     <h:form>
                         <h:commandButton styleClass="btn" value="Delete"
                                          action="#{partList.deleteAction(part)}"/>
+                        <f:ajax execute="@this" render=":partTable"/>
                     </h:form>
                 </h:column>
 
                 <f:facet name="footer">
                     <h:button styleClass="btn" outcome="/part/part_create__basic.xhtml"
                                               value="Create new part"/>
+                    <h:button rendered="#{facesContext.externalContext.isUserInRole('admin')}"
+                              styleClass="btn" outcome="/part/car_create.xhtml"
+                              value="Create new car"/>
                 </f:facet>
             </h:dataTable>
         </article>
