@@ -1,4 +1,4 @@
-package garagemanager.configuration.observer;
+package garagemanager.configuration.singleton;
 
 import garagemanager.carparts.entity.Car;
 import garagemanager.carparts.entity.FuelType;
@@ -9,52 +9,68 @@ import garagemanager.carparts.service.PartService;
 import garagemanager.user.entity.User;
 import garagemanager.user.entity.UserRoles;
 import garagemanager.user.service.UserService;
-import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.enterprise.context.Initialized;
-import jakarta.enterprise.context.control.RequestContextController;
-import jakarta.enterprise.event.Observes;
-import jakarta.inject.Inject;
+import jakarta.annotation.PostConstruct;
+import jakarta.annotation.security.DeclareRoles;
+import jakarta.annotation.security.RunAs;
+import jakarta.ejb.*;
+import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
+import lombok.extern.java.Log;
 
+import java.io.InputStream;
 import java.nio.file.Path;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
-@ApplicationScoped
+/**
+ * EJB singleton can be forced to start automatically when application starts. Injects proxy to the services and fills
+ * database with default content. When using persistence storage application instance should be initialized only during
+ * first run in order to init database with starting data. Good place to create first default admin user.
+ */
+@Singleton
+@Startup
+@TransactionAttribute(value = TransactionAttributeType.NOT_SUPPORTED)
+@NoArgsConstructor
+@DependsOn("InitializeAdminService")
+@DeclareRoles({UserRoles.ADMIN, UserRoles.USER})
+@RunAs(UserRoles.ADMIN)
+@Log
 public class InitializedData {
 
-    private final UserService userService;
-    private final PartService partService;
-    private final CarService carService;
-    private final RequestContextController requestContextController;
+    private PartService partService;
 
-    @Inject
-    public InitializedData(
-            CarService carService,
-            UserService userService,
-            PartService partService,
-            RequestContextController requestContextController
-    ) {
-        this.carService = carService;
-        this.userService = userService;
+    private UserService userService;
+
+    private CarService carService;
+
+    @EJB
+    public void setPartService(PartService partService) {
         this.partService = partService;
-        this.requestContextController = requestContextController;
     }
 
-    public void contextInitialized(@Observes @Initialized(ApplicationScoped.class) Object init) {
-        init();
+    @EJB
+    public void setUserService(UserService userService) {
+        this.userService = userService;
     }
 
+    @EJB
+    public void setCarService(CarService carService) {
+        this.carService = carService;
+    }
+
+    /**
+     * Initializes database with some example values. Should be called after creating this object. This object should be
+     * created only once.
+     */
+    @PostConstruct
     @SneakyThrows
     private void init() {
+        System.out.println("Init initialized");
 
-        requestContextController.activate();
-
-        // === Tworzenie użytkowników ===
-
-        if (userService.find("admin").isEmpty()) {
+        if (userService.initFind("admin").isEmpty()) {
+            System.out.println("NIE MA ADMINA");
             User admin = createUserWithPhoto(UUID.fromString("c4804e0f-769e-4ab9-9ebe-0578fb4f00a6"),
                     "admin", "System", "Admin", LocalDate.of(1990, 10, 21),
                     "admin@simplerpg.example.com", "adminadmin",
@@ -100,9 +116,9 @@ public class InitializedData {
                     .mileage(230_000)
                     .build();
 
-            carService.create(audi);
-            carService.create(bmw);
-            carService.create(opel);
+            carService.initCreate(audi);
+            carService.initCreate(bmw);
+            carService.initCreate(opel);
 
             Part oilFilter = Part.builder()
                     .id(UUID.fromString("a842ffcf-5dc7-43ca-831f-cb0c89479087"))
@@ -138,11 +154,24 @@ public class InitializedData {
                     .user(admin)
                     .build();
 
-            partService.create(oilFilter);
-            partService.create(grill);
-            partService.create(tires);
+            partService.initCreate(oilFilter);
+            partService.initCreate(grill);
+            partService.initCreate(tires);
+        }
+    }
 
-            requestContextController.deactivate();
+    /**
+     * @param name name of the desired resource
+     * @return array of bytes read from the resource
+     */
+    @SneakyThrows
+    private byte[] getResourceAsByteArray(String name) {
+        try (InputStream is = this.getClass().getResourceAsStream(name)) {
+            if (is != null) {
+                return is.readAllBytes();
+            } else {
+                throw new IllegalStateException("Unable to get resource %s".formatted(name));
+            }
         }
     }
 
@@ -166,4 +195,5 @@ public class InitializedData {
         userService.create(user);
         return user;
     }
+
 }

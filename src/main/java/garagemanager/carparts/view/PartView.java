@@ -4,6 +4,7 @@ import garagemanager.carparts.entity.Part;
 import garagemanager.carparts.model.PartModel;
 import garagemanager.carparts.service.PartService;
 import garagemanager.component.ModelFunctionFactory;
+import jakarta.ejb.EJB;
 import jakarta.faces.context.FacesContext;
 import jakarta.faces.view.ViewScoped;
 import jakarta.inject.Inject;
@@ -24,7 +25,7 @@ import java.util.UUID;
 @Named
 public class PartView implements Serializable {
 
-    private final PartService service;
+    private PartService service;
     private final ModelFunctionFactory factory;
 
     /**
@@ -39,16 +40,15 @@ public class PartView implements Serializable {
     private PartModel part;
 
 
-    /**
-     * @param service service for managing characters
-     * @param factory factory producing functions for conversion between models and entities
-     */
     @Inject
-    public PartView(PartService service, ModelFunctionFactory factory) {
-        this.service = service;
+    public PartView (ModelFunctionFactory factory) {
         this.factory = factory;
     }
 
+    @EJB
+    public void setService(PartService service) {
+        this.service = service;
+    }
     /**
      * In order to prevent calling service on different steps of JSF request lifecycle, model property is cached within
      * field and initialized during init of the view.

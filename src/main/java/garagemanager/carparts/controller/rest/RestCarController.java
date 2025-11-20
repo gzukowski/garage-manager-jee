@@ -10,6 +10,10 @@ import garagemanager.carparts.dto.response.GetCarResponse;
 import garagemanager.carparts.dto.response.GetCarsResponse;
 import garagemanager.carparts.service.CarService;
 import garagemanager.component.DtoFunctionFactory;
+import garagemanager.user.entity.UserRoles;
+import jakarta.annotation.security.RolesAllowed;
+import jakarta.ejb.EJB;
+import jakarta.ejb.EJBAccessException;
 import jakarta.inject.Inject;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.ws.rs.BadRequestException;
@@ -20,13 +24,17 @@ import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.UriInfo;
 import lombok.SneakyThrows;
+import lombok.extern.java.Log;
 
 import java.util.UUID;
+import java.util.logging.Level;
 
 @Path("")
+@RolesAllowed(UserRoles.USER)
+@Log
 public class RestCarController implements CarController {
 
-    private final CarService service;
+    private CarService service;
 
     private final DtoFunctionFactory factory;
 
@@ -46,13 +54,16 @@ public class RestCarController implements CarController {
 
     @Inject
     public RestCarController(
-            CarService service,
             DtoFunctionFactory factory,
             @SuppressWarnings("CdiInjectionPointsInspection") UriInfo uriInfo
     ) {
-        this.service = service;
         this.factory = factory;
         this.uriInfo = uriInfo;
+    }
+
+    @EJB
+    public void setService(CarService service) {
+        this.service = service;
     }
 
     @Override
@@ -83,6 +94,9 @@ public class RestCarController implements CarController {
             throw new WebApplicationException(Response.Status.CREATED);
         } catch (IllegalArgumentException ex) {
             throw new BadRequestException(ex);
+        } catch (SecurityException | EJBAccessException e) {
+            log.log(Level.WARNING, "Unauthorized: ", e);
+            throw new WebApplicationException("Unauthorized", Response.Status.FORBIDDEN);
         }
     }
 
@@ -98,12 +112,19 @@ public class RestCarController implements CarController {
 
     @Override
     public void deleteCar(UUID id) {
-        service.find(id).ifPresentOrElse(
-                entity -> service.delete(id),
-                () -> {
-                    throw new NotFoundException();
-                }
-        );
+        try {
+            service.find(id).ifPresentOrElse(
+                    entity -> service.delete(id),
+                    () -> {
+                        throw new NotFoundException();
+                    }
+            );
+        } catch (IllegalArgumentException ex) {
+            throw new BadRequestException(ex);
+        } catch (SecurityException | EJBAccessException e) {
+            log.log(Level.WARNING, "Unauthorized: ", e);
+            throw new WebApplicationException("Unauthorized", Response.Status.FORBIDDEN);
+        }
     }
 
 

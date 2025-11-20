@@ -2,7 +2,7 @@ package garagemanager.carparts.repository.persistence;
 
 import garagemanager.carparts.entity.Car;
 import garagemanager.carparts.repository.api.CarRepository;
-import jakarta.enterprise.context.RequestScoped;
+import jakarta.enterprise.context.Dependent;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 
@@ -16,7 +16,7 @@ import java.util.UUID;
  * safe). Because services are CDI application scoped beans (technically singletons) then repositories must be thread
  * scoped in order to ensure single entity manager for single thread.
  */
-@RequestScoped
+@Dependent
 public class CarPersistenceRepository implements CarRepository{
 
     /**

@@ -1,62 +1,62 @@
 package garagemanager.carparts.service;
 
 import garagemanager.carparts.entity.Car;
-import garagemanager.carparts.entity.Part;
 import garagemanager.carparts.repository.api.CarRepository;
-import garagemanager.carparts.repository.api.PartRepository;
-import garagemanager.user.entity.User;
-import garagemanager.user.repository.api.UserRepository;
-import jakarta.enterprise.context.ApplicationScoped;
+import garagemanager.user.entity.UserRoles;
+import jakarta.annotation.security.PermitAll;
+import jakarta.annotation.security.RolesAllowed;
+import jakarta.ejb.LocalBean;
+import jakarta.ejb.Stateless;
 import jakarta.inject.Inject;
-import jakarta.transaction.Transactional;
+import jakarta.security.enterprise.SecurityContext;
 import lombok.NoArgsConstructor;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
-@ApplicationScoped
+@LocalBean
+@Stateless
 @NoArgsConstructor(force = true)
 public class CarService {
 
     private final CarRepository repository;
-    private final PartRepository partRepository;
-    private final UserRepository userRepository;
+    private final SecurityContext securityContext;
 
     @Inject
-    public CarService(PartRepository partRepository, CarRepository carRepository, UserRepository userRepository) {
-        this.repository = carRepository;
-        this.partRepository = partRepository;
-        this.userRepository = userRepository;
+    public CarService(CarRepository repository,
+                      @SuppressWarnings("CdiInjectionPointsInspection") SecurityContext securityContext) {
+        this.repository = repository;
+        this.securityContext = securityContext;
     }
 
+    @RolesAllowed(UserRoles.USER)
     public Optional<Car> find(UUID id) {
         return repository.find(id);
     }
 
+    @RolesAllowed(UserRoles.USER)
     public List<Car> findAll() {
         return repository.findAll();
     }
 
-    @Transactional
+    @RolesAllowed(UserRoles.ADMIN)
     public void create(Car car) {
         repository.create(car);
     }
 
-    @Transactional
+    @RolesAllowed(UserRoles.ADMIN)
     public void update(Car car) {
         repository.update(car);
     }
 
-    @Transactional
+    @RolesAllowed(UserRoles.ADMIN)
     public void delete(UUID carId) {
-        repository.find(carId).ifPresent(car -> {
-            List<Part> partsToDelete = partRepository.findAllByCar(car);
-            partsToDelete.forEach(partRepository::delete);
+        repository.delete(repository.find(carId).orElseThrow());
+    }
 
-            repository.delete(car);
-        });
+    @PermitAll
+    public void initCreate(Car car) {
+        repository.create(car);
     }
 }
