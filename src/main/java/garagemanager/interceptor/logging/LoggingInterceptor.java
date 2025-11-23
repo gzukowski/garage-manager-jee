@@ -30,11 +30,9 @@ public class LoggingInterceptor {
             username = securityContext.getCallerPrincipal().getName();
         }
 
-        // Pobierz nazwę operacji z adnotacji
         LogOperation annotation = ctx.getMethod().getAnnotation(LogOperation.class);
         String operationName = ctx.getMethod().getName();
 
-        // Pobierz id zasobu jeśli pierwszy argument jest typu UUID lub encja z getId()
         Object[] params = ctx.getParameters();
         String resourceId = null;
         if (params.length > 0) {
@@ -49,7 +47,6 @@ public class LoggingInterceptor {
         }
 
         logger.info(String.format("User: %s, Operation: %s, Resource: %s", username, operationName, resourceId));
-
         return ctx.proceed();
     }
 }
