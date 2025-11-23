@@ -236,6 +236,7 @@ public class PartService {
 
     @RolesAllowed(UserRoles.USER)
     public void createForCurrentUser(Part part) {
+        System.out.println("Part dla current usera " + part);
         User user = userRepository.findByLogin(securityContext.getCallerPrincipal().getName())
                 .orElseThrow(IllegalStateException::new);
 

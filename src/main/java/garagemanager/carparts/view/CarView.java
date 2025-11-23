@@ -81,12 +81,19 @@ public class CarView implements Serializable {
         }
     }
 
-    public String deletePartAction(CarModel.Part part) {
+    public void deletePartAction(CarModel.Part part) {
         try {
             partService.delete(part.getId());
-            return "car_view?faces-redirect=true&amp;id=" + id.toString();
+            if (this.car != null && this.car.getParts() != null) {
+                this.car.setParts(
+                        this.car.getParts().stream()
+                                .filter(p -> !p.getId().equals(part.getId()))
+                                .collect(Collectors.toList())
+                );
+            }
+            //return "car_view?faces-redirect=true&amp;id=" + id.toString();
         } catch (IllegalArgumentException e) {
-            return null;
+            return;
         }
     }
 

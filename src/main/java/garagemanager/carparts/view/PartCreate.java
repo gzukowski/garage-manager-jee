@@ -77,7 +77,7 @@ public class PartCreate implements Serializable {
 
     public String saveAction() {
         System.out.println("Part save action" + part);
-        partService.create(factory.modelToPart().apply(part));
+        partService.createForCurrentUser(factory.modelToPart().apply(part));
         conversation.end();
         return "/part/part_list.xhtml?faces-redirect=true";
     }
