@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:h="jakarta.faces.html" xmlns:ui="jakarta.faces.facelets"
+    xmlns:f="jakarta.faces.core" template="/WEB-INF/template/main.xhtml">
+
+    <ui:define name="content">
+        <article>
+            <header>
+                <h2>Chat</h2>
+            </header>
+            <div class="container">
+                <div class="row">
+                    <div class="col-12">
+                        <div id="chatBox"
+                            style="height:300px;overflow:auto;border:1px solid #ddd;padding:8px;background:#fff;"></div>
+                    </div>
+                </div>
+
+                <div class="row mt-2">
+                    <div class="col-3">
+                        <h:inputText id="recipient" styleClass="form-control" value="all" />
+                        <p class="small">Recipient (username or 'all')</p>
+                    </div>
+                    <div class="col-7">
+                        <h:inputTextarea id="message" styleClass="form-control" rows="3" />
+                    </div>
+                    <div class="col-2">
+                        <button class="btn btn-primary" id="sendBtn">Send</button>
+                    </div>
+                </div>
+            </div>
+
+        </article>
+
+        <script>
+            (function () {
+                const chatBox = document.getElementById('chatBox');
+                const recipientInput = document.getElementById('recipient');
+                const messageInput = document.getElementById('message');
+                const sendBtn = document.getElementById('sendBtn');
+
+                const wsProto = (location.protocol === 'https:') ? 'wss:' : 'ws:';
+                const wsUrl = wsProto + '//' + location.host + "#{facesContext.externalContext.requestContextPath}" + '/ws/chat';
+                const ws = new WebSocket(wsUrl);
+
+                ws.onmessage = function (evt) {
+                    try {
+                        const m = JSON.parse(evt.data);
+                        const el = document.createElement('div');
+                        const who = document.createElement('strong');
+                        who.textContent = (m.sender || 'anon') + ': ';
+                        el.appendChild(who);
+                        el.appendChild(document.createTextNode(m.text || ''));
+                        chatBox.appendChild(el);
+                        chatBox.scrollTop = chatBox.scrollHeight;
+                    } catch (e) {
+                        console.warn('Invalid chat message', e, evt.data);
+                    }
+                };
+
+                sendBtn.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    const recipient = recipientInput.value || 'all';
+                    const text = messageInput.value || '';
+                    if (!text.trim()) return;
+                    fetch('#{facesContext.externalContext.requestContextPath}' + '/api/v1/chat/send', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ recipient: recipient, text: text })
+                    }).then(r => {
+                        if (!r.ok) {
+                            console.warn('Failed to send message', r.status);
+                        }
+                    }).catch(err => console.error(err));
+                    messageInput.value = '';
+                });
+
+            })();
+        </script>
+
+    </ui:define>
+
+</ui:composition>
