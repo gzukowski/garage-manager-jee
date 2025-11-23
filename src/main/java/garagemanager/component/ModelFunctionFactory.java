@@ -41,17 +41,9 @@ public class ModelFunctionFactory {
     public ModelToPartFunction modelToPart() {
         return new ModelToPartFunction();
     }
-//
-//
-//    /**
-//     * Returns a function to convert a single {@link Profession} to {@link ProfessionModel}.
-//     *
-//     * @return new instance
-//     */
-//    public ProfessionToModelFunction professionToModel() {
-//        return new ProfessionToModelFunction(skillToModel());
-//    }
-//
-//
+
+    public ModelToCarFunction modelToCar() {
+        return new ModelToCarFunction();
+    }
 
 }

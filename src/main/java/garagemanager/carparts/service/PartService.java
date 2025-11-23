@@ -3,6 +3,7 @@ package garagemanager.carparts.service;
 import garagemanager.auth.SecurityUtils;
 import garagemanager.carparts.repository.api.CarRepository;
 import garagemanager.carparts.repository.api.PartRepository;
+import garagemanager.interceptor.logging.LogOperation;
 import garagemanager.user.entity.User;
 import garagemanager.carparts.entity.Part;
 import garagemanager.user.entity.UserRoles;
@@ -157,6 +158,7 @@ public class PartService {
                 .map(partRepository::findAllByUser);
     }
 
+    @LogOperation
     @RolesAllowed(UserRoles.USER)
     public void update(Part part) {
         SecurityUtils.checkOwnership(
@@ -167,6 +169,7 @@ public class PartService {
         partRepository.update(part);
     }
 
+    @LogOperation
     @RolesAllowed(UserRoles.ADMIN)
     public void create(Part part) {
         System.out.println("Part " + part);
@@ -215,6 +218,7 @@ public class PartService {
                 .ifPresent(u -> u.getParts().add(part));
     }
 
+    @LogOperation
     @RolesAllowed(UserRoles.USER)
     public void delete(UUID id) {
         Optional<Part> optionalPart = partRepository.find(id);
@@ -235,6 +239,7 @@ public class PartService {
     }
 
     @RolesAllowed(UserRoles.USER)
+    @LogOperation
     public void createForCurrentUser(Part part) {
         System.out.println("Part dla current usera " + part);
         User user = userRepository.findByLogin(securityContext.getCallerPrincipal().getName())
