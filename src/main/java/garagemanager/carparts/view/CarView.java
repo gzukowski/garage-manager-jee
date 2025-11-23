@@ -1,6 +1,7 @@
 package garagemanager.carparts.view;
 
 import garagemanager.carparts.entity.Car;
+import garagemanager.carparts.entity.Part;
 import garagemanager.carparts.model.CarModel;
 import garagemanager.carparts.service.CarService;
 import garagemanager.carparts.service.PartService;
@@ -15,8 +16,11 @@ import lombok.Setter;
 
 import java.io.IOException;
 import java.io.Serializable;
+import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 /**
  * View bean for rendering single character information.
@@ -57,11 +61,23 @@ public class CarView implements Serializable {
      * field and initialized during init of the view.
      */
     public void init() throws IOException {
-        Optional<Car> car = service.find(id);
-        if (car.isPresent()) {
-            this.car = factory.carToModel().apply(car.get());
+        Optional<Car> carEntity = service.find(id);
+
+        if (carEntity.isPresent()) {
+            List<Part> partList = partService.findAllForCurrentUser();
+
+            this.car = factory.carToModel().apply(carEntity.get());
+
+            Set<UUID> partIds = partList.stream()
+                    .map(Part::getId)
+                    .collect(Collectors.toSet());
+
+            this.car.setParts(this.car.getParts().stream()
+                    .filter(p -> partIds.contains(p.getId()))
+                    .collect(Collectors.toList()));
         } else {
-            FacesContext.getCurrentInstance().getExternalContext().responseSendError(HttpServletResponse.SC_NOT_FOUND, "Car not found");
+            FacesContext.getCurrentInstance().getExternalContext()
+                    .responseSendError(HttpServletResponse.SC_NOT_FOUND, "Car not found");
         }
     }
 

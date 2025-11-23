@@ -34,6 +34,16 @@
 
     <security-constraint>
         <web-resource-collection>
+            <web-resource-name>car</web-resource-name>
+            <url-pattern>/car/*</url-pattern>
+        </web-resource-collection>
+        <auth-constraint>
+            <role-name>user</role-name>
+        </auth-constraint>
+    </security-constraint>
+
+    <security-constraint>
+        <web-resource-collection>
             <web-resource-name>part</web-resource-name>
             <url-pattern>/part/*</url-pattern>
         </web-resource-collection>

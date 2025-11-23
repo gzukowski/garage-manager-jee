@@ -125,12 +125,34 @@ public class PartService {
 
     @RolesAllowed(UserRoles.USER)
     public Optional<List<Part>> findAllByCar(UUID id) {
-        return carRepository.find(id)
-                .map(partRepository::findAllByCar);
+        var principal = securityContext.getCallerPrincipal();
+        if (principal == null) {
+            throw new EJBAccessException("Brak zalogowanego użytkownika.");
+        }
+
+        boolean isAdmin = securityContext.isCallerInRole(UserRoles.ADMIN);
+        String login = principal.getName();
+
+        return carRepository.find(id).map(car -> {
+            if (isAdmin) {
+                return partRepository.findAllByCar(car);
+            }
+
+            User currentUser = userRepository.findByLogin(login)
+                    .orElseThrow(() -> new IllegalArgumentException("Użytkownik nie istnieje."));
+
+            return partRepository.findAllByUserAndCar(currentUser, car);
+        });
+
     }
 
     @RolesAllowed(UserRoles.USER)
     public Optional<List<Part>> findAllByUser(UUID id) {
+
+        var principal = securityContext.getCallerPrincipal();
+        if (principal == null) {
+            throw new EJBAccessException("Brak zalogowanego użytkownika.");
+        }
         return userRepository.find(id)
                 .map(partRepository::findAllByUser);
     }

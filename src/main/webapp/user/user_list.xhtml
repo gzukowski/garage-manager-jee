@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="jakarta.faces.html"
+                xmlns:ui="jakarta.faces.facelets"
+                xmlns:f="jakarta.faces.core"
+                template="/WEB-INF/template/main.xhtml">
+
+    <ui:define name="content">
+        <f:loadBundle var="msg" basename="garagemanager.view.i18n.messages"/>
+        <article class="text--justified">
+            <header><h2>#{msg['nav.users']}</h2></header>
+
+            <h:dataTable id="userTable" value="#{userList.users.users}" var="user"
+                         styleClass="table align-middle mb-0 bg-white" headerClass="bg-light">
+                <h:column>
+                    <f:facet name="header">#{msg['users.login']}</f:facet>
+                    <h:outputText value="#{user.login}"/>
+                </h:column>
+
+                <h:column>
+                    <f:facet name="header">#{msg['users.delete']}</f:facet>
+                    <h:form>
+                        <h:commandButton styleClass="btn" value="#{msg['users.delete']}"
+                                         actionListener="#{userList.deleteAction(user)}">
+<!--                            <f:ajax execute="@this" render=":userTable"/>-->
+                        </h:commandButton>
+                    </h:form>
+                </h:column>
+            </h:dataTable>
+        </article>
+    </ui:define>
+
+</ui:composition>

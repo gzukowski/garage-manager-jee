@@ -65,10 +65,12 @@
                             </li>
                         </h:panelGroup>
 
-<!--                        <li class="nav-item">-->
-<!--                            <h:link styleClass="nav-link"-->
-<!--                                    outcome="/car/car_list.xhtml">Cars</h:link>-->
-<!--                        </li>-->
+<!--                        <h:panelGroup rendered="#{facesContext.externalContext.isUserInRole('user')}">-->
+                            <li class="nav-item">
+                                <h:link styleClass="nav-link"
+                                        outcome="/car/car_list.xhtml">#{messages['nav.cars']}</h:link>
+                            </li>
+<!--                        </h:panelGroup>-->
                     </ul>
                 </div>
             </nav>

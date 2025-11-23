@@ -32,8 +32,9 @@ public class UserLogout {
     @SneakyThrows
     public String logoutAction() {
         request.logout();//Session invalidate can possibly not work with JASPIC.
-        String viewId = FacesContext.getCurrentInstance().getViewRoot().getViewId();
-        return viewId + "?faces-redirect=true&includeViewParams=true";
+//        String viewId = FacesContext.getCurrentInstance().getViewRoot().getViewId();
+//        return viewId + "?faces-redirect=true&includeViewParams=true";
+        return "/index.xhtml?faces-redirect=true";
     }
 
 }
