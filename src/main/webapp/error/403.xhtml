@@ -1,17 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<ui:composition xmlns="http://www.w3.org/1999/xhtml"
-                xmlns:h="jakarta.faces.html"
-                xmlns:ui="jakarta.faces.facelets"
-                xmlns:f="jakarta.faces.core"
-                template="/WEB-INF/template/main.xhtml">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:h="jakarta.faces.html" xmlns:ui="jakarta.faces.facelets"
+    xmlns:f="jakarta.faces.core" template="/WEB-INF/template/main.xhtml">
 
     <ui:define name="content">
         <article class="">
             <header>
-                <h2>403 - Forbidden</h2>
+                <h2>#{messages['error.403.title']}</h2>
             </header>
             <section>
-                <p>Not enough privileges.</p>
+                <p>#{messages['error.403.message']}</p>
             </section>
         </article>
     </ui:define>

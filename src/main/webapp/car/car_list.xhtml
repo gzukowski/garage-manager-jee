@@ -1,37 +1,36 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<ui:composition xmlns="http://www.w3.org/1999/xhtml"
-                xmlns:h="jakarta.faces.html"
-                xmlns:ui="jakarta.faces.facelets"
-                xmlns:f="jakarta.faces.core"
-                template="/WEB-INF/template/main.xhtml">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:h="jakarta.faces.html" xmlns:ui="jakarta.faces.facelets"
+    xmlns:f="jakarta.faces.core" template="/WEB-INF/template/main.xhtml">
 
     <ui:define name="content">
-        <h:outputStylesheet library="car" name="css/car_list.css"/><!-- Automatically relocated to head. -->
+        <h:outputStylesheet library="car" name="css/car_list.css" /><!-- Automatically relocated to head. -->
 
         <article class="text--justified">
-            <header><h2>Cars</h2></header>
+            <header>
+                <h2>#{messages['car.title']}</h2>
+            </header>
 
             <h:form id="carForm">
                 <h:dataTable id="carTable" value="#{carList.cars.cars}" var="car"
-                             styleClass="table align-middle mb-0 bg-white" headerClass="bg-light">
+                    styleClass="table align-middle mb-0 bg-white" headerClass="bg-light">
 
                     <h:column>
-                        <f:facet name="header">Name</f:facet>
-                        <h:outputText value="#{car.brand} #{car.name} #{car.productionYear}"/>
+                        <f:facet name="header">#{messages['common.name']}</f:facet>
+                        <h:outputText value="#{car.brand} #{car.name} #{car.productionYear}" />
                     </h:column>
 
                     <h:column>
-                        <f:facet name="header">View</f:facet>
-                        <h:link outcome="/car/car_view.xhtml" value="View">
-                            <f:param name="id" value="#{car.id}"/>
+                        <f:facet name="header">#{messages['common.view']}</f:facet>
+                        <h:link outcome="/car/car_view.xhtml" value="#{messages['common.view']}">
+                            <f:param name="id" value="#{car.id}" />
                         </h:link>
                     </h:column>
 
                     <h:column rendered="#{facesContext.externalContext.isUserInRole('admin')}">
-                        <f:facet name="header">Delete</f:facet>
-                        <h:commandButton styleClass="btn" value="Delete"
-                                         action="#{carList.deleteAction(car)}">
-                            <f:ajax execute="@this" render="carTable"/>
+                        <f:facet name="header">#{messages['common.delete']}</f:facet>
+                        <h:commandButton styleClass="btn" value="#{messages['common.delete']}"
+                            action="#{carList.deleteAction(car)}">
+                            <f:ajax execute="@this" render="carTable" />
                         </h:commandButton>
                     </h:column>
 

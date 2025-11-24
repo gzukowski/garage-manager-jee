@@ -5,7 +5,7 @@
     <ui:define name="content">
         <article>
             <header>
-                <h2>Chat</h2>
+                <h2>#{messages['chat.title']}</h2>
             </header>
             <div class="container">
                 <div class="row">
@@ -19,14 +19,14 @@
                     <div class="row mt-2">
                         <div class="col-3">
                             <h:inputText id="recipient" styleClass="form-control" value="#{chatView.recipient}" />
-                            <p class="small">Recipient (username or 'all')</p>
+                            <p class="small">#{messages['chat.recipient']}</p>
                         </div>
                         <div class="col-7">
                             <h:inputTextarea id="message" styleClass="form-control" rows="3"
                                 value="#{chatView.message}" />
                         </div>
                         <div class="col-2">
-                            <h:commandButton value="Send" styleClass="btn btn-primary">
+                            <h:commandButton value="#{messages['chat.send']}" styleClass="btn btn-primary">
                                 <f:ajax execute="@form" render="message" listener="#{chatView.send}" />
                             </h:commandButton>
                         </div>
@@ -49,13 +49,13 @@
                         const m = JSON.parse(evt.data);
                         const el = document.createElement('div');
                         const who = document.createElement('strong');
-                        who.textContent = (m.sender || 'anon') + ': ';
+                        who.textContent = (m.sender || "#{messages['chat.anonymous']}") + ': ';
                         el.appendChild(who);
                         el.appendChild(document.createTextNode(m.text || ''));
                         chatBox.appendChild(el);
                         chatBox.scrollTop = chatBox.scrollHeight;
                     } catch (e) {
-                        console.warn('Invalid chat message', e, evt.data);
+                        console.warn("#{messages['chat.invalidMessage']}", e, evt.data);
                     }
                 };
 

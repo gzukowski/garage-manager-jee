@@ -5,11 +5,11 @@
 <f:view>
     <h:head>
         <meta charset="UTF-8" />
-        <meta name="description" content="Garage manager" />
+        <meta name="description" content="#{messages['site.title']}" />
         <meta name="keywords" content="carparts" />
         <meta name="author" content="gzukowski" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>Garage manager</title>
+        <title>#{messages['site.title']}</title>
 
         <h:outputStylesheet library="webjars" name="mdb-ui-kit/6.4.0/css/mdb.min.css" />
         <h:outputStylesheet library="default" name="css/main.css" />
@@ -27,7 +27,7 @@
 
         <div class="container">
             <header class="mb-4 mt-4">
-                <h1>Garage</h1>
+                <h1>#{messages['site.h1']}</h1>
                 <div class="container d-flex  align-items-center justify-content-end">
                     <h:form styleClass="container d-flex  align-items-center justify-content-end"
                         rendered="#{facesContext.externalContext.userPrincipal != null}">
