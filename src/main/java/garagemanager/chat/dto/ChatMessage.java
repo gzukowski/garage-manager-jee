@@ -2,19 +2,12 @@ package garagemanager.chat.dto;
 
 import java.time.Instant;
 
-/**
- * Simple DTO representing a chat message.
- */
 public class ChatMessage {
 
     private String sender;
-
     private String recipient; // null or "all" means broadcast
-
     private String text;
-
     private Instant timestamp;
-
     public ChatMessage() {
     }
 

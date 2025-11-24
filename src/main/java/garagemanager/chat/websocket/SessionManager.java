@@ -16,10 +16,8 @@ public class SessionManager {
 
     private static final Logger LOG = Logger.getLogger(SessionManager.class.getName());
 
-    // username -> set of sessions
     private final Map<String, Set<Session>> sessionsByUser = new ConcurrentHashMap<>();
 
-    // session id -> username
     private final Map<String, String> userBySession = new ConcurrentHashMap<>();
 
     public void addSession(String username, Session session) {

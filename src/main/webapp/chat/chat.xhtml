@@ -15,18 +15,23 @@
                     </div>
                 </div>
 
-                <div class="row mt-2">
-                    <div class="col-3">
-                        <h:inputText id="recipient" styleClass="form-control" value="all" />
-                        <p class="small">Recipient (username or 'all')</p>
+                <h:form id="chatForm">
+                    <div class="row mt-2">
+                        <div class="col-3">
+                            <h:inputText id="recipient" styleClass="form-control" value="#{chatView.recipient}" />
+                            <p class="small">Recipient (username or 'all')</p>
+                        </div>
+                        <div class="col-7">
+                            <h:inputTextarea id="message" styleClass="form-control" rows="3"
+                                value="#{chatView.message}" />
+                        </div>
+                        <div class="col-2">
+                            <h:commandButton value="Send" styleClass="btn btn-primary">
+                                <f:ajax execute="@form" render="message" listener="#{chatView.send}" />
+                            </h:commandButton>
+                        </div>
                     </div>
-                    <div class="col-7">
-                        <h:inputTextarea id="message" styleClass="form-control" rows="3" />
-                    </div>
-                    <div class="col-2">
-                        <button class="btn btn-primary" id="sendBtn">Send</button>
-                    </div>
-                </div>
+                </h:form>
             </div>
 
         </article>
@@ -34,9 +39,6 @@
         <script>
             (function () {
                 const chatBox = document.getElementById('chatBox');
-                const recipientInput = document.getElementById('recipient');
-                const messageInput = document.getElementById('message');
-                const sendBtn = document.getElementById('sendBtn');
 
                 const wsProto = (location.protocol === 'https:') ? 'wss:' : 'ws:';
                 const wsUrl = wsProto + '//' + location.host + "#{facesContext.externalContext.requestContextPath}" + '/ws/chat';
@@ -56,23 +58,6 @@
                         console.warn('Invalid chat message', e, evt.data);
                     }
                 };
-
-                sendBtn.addEventListener('click', function (e) {
-                    e.preventDefault();
-                    const recipient = recipientInput.value || 'all';
-                    const text = messageInput.value || '';
-                    if (!text.trim()) return;
-                    fetch('#{facesContext.externalContext.requestContextPath}' + '/api/v1/chat/send', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ recipient: recipient, text: text })
-                    }).then(r => {
-                        if (!r.ok) {
-                            console.warn('Failed to send message', r.status);
-                        }
-                    }).catch(err => console.error(err));
-                    messageInput.value = '';
-                });
 
             })();
         </script>

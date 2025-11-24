@@ -23,6 +23,7 @@ public class ChatEventObserver {
             sessionManager.sendToAll(json);
         } else {
             sessionManager.sendToUser(msg.getRecipient(), json);
+            
             // also send to sender to reflect message in sender's chat (optional)
             if (msg.getSender() != null && !msg.getSender().equals(msg.getRecipient())) {
                 sessionManager.sendToUser(msg.getSender(), json);
