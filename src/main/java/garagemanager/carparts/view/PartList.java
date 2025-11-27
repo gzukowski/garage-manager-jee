@@ -37,7 +37,7 @@ public class PartList {
 
     public PartsModel getParts() {
         if (parts == null) {
-            parts = factory.partsToModel().apply(service.findAll());
+            parts = factory.partsToModel().apply(service.findAllForCurrentUser());
         }
         return parts;
     }

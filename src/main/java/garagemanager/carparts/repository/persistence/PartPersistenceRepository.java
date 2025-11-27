@@ -83,4 +83,15 @@ public class PartPersistenceRepository implements PartRepository {
                 .getResultList();
     }
 
+    @Override
+    public List<Part> findAllByUserAndCar(User user, Car car){
+        return em.createQuery(
+                        "select p from Part p where p.user = :user and p.car = :car",
+                        Part.class
+                )
+                .setParameter("user", user)
+                .setParameter("car", car)
+                .getResultList();
+    }
+
 }

@@ -1,50 +1,48 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<ui:composition xmlns="http://www.w3.org/1999/xhtml"
-                xmlns:h="jakarta.faces.html"
-                xmlns:ui="jakarta.faces.facelets"
-                xmlns:f="jakarta.faces.core"
-                template="/WEB-INF/template/main.xhtml">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:h="jakarta.faces.html" xmlns:ui="jakarta.faces.facelets"
+    xmlns:f="jakarta.faces.core" template="/WEB-INF/template/main.xhtml">
 
     <ui:define name="content">
-        <h:outputStylesheet library="part" name="css/part_list.css"/><!-- Automatically relocated to head. -->
+        <h:outputStylesheet library="part" name="css/part_list.css" /><!-- Automatically relocated to head. -->
 
         <article class="text--justified">
-            <header><h2>Parts</h2></header>
+            <header>
+                <h2>#{messages['part.title']}</h2>
+            </header>
 
-            <h:dataTable value="#{partList.parts.parts}" var="part"
-                         styleClass="table align-middle mb-0 bg-white" headerClass="bg-light">
+            <h:dataTable id="partTable" value="#{partList.parts.parts}" var="part"
+                styleClass="table align-middle mb-0 bg-white" headerClass="bg-light">
+
                 <h:column>
-                    <f:facet name="header">Name</f:facet>
-                    <h:outputText value="#{part.name}"/>
+                    <f:facet name="header">#{messages['common.name']}</f:facet>
+                    <h:outputText value="#{part.name}" />
                 </h:column>
 
                 <h:column>
-                    <f:facet name="header">View</f:facet>
-                    <h:link outcome="/part/part_view.xhtml" value="View">
-                        <f:param name="id" value="#{part.id}"/>
+                    <f:facet name="header">#{messages['common.view']}</f:facet>
+                    <h:link outcome="/part/part_view.xhtml" value="#{messages['common.view']}">
+                        <f:param name="id" value="#{part.id}" />
                     </h:link>
                 </h:column>
 
-                <!--                <h:column>-->
-                <!--                    <f:facet name="header">Edit</f:facet>-->
-                <!--                    <h:link outcome="/character/character_edit.xhtml" value="Edit">-->
-                <!--                        <f:param name="id" value="#{character.id}"/>-->
-                <!--                    </h:link>-->
-                <!--                </h:column>-->
-
                 <h:column>
-                    <f:facet name="header">Delete</f:facet>
+                    <f:facet name="header">#{messages['common.delete']}</f:facet>
                     <h:form>
-                        <h:commandButton styleClass="btn" value="Delete"
-                                         action="#{partList.deleteAction(part)}"/>
+                        <h:commandButton styleClass="btn" value="#{messages['common.delete']}"
+                            action="#{partList.deleteAction(part)}">
+                            <f:ajax execute="@this" render=":partTable" />
+                        </h:commandButton>
                     </h:form>
                 </h:column>
 
                 <f:facet name="footer">
                     <h:button styleClass="btn" outcome="/part/part_create__basic.xhtml"
-                                              value="Create new part"/>
+                        value="#{messages['part.list.createNewPart']}" />
+                    <h:button rendered="#{facesContext.externalContext.isUserInRole('admin')}" styleClass="btn"
+                        outcome="/part/car_create.xhtml" value="#{messages['part.list.createNewCar']}" />
                 </f:facet>
             </h:dataTable>
+
         </article>
     </ui:define>
 

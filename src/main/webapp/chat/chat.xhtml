@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:h="jakarta.faces.html" xmlns:ui="jakarta.faces.facelets"
+    xmlns:f="jakarta.faces.core" template="/WEB-INF/template/main.xhtml">
+
+    <ui:define name="content">
+        <article>
+            <header>
+                <h2>#{messages['chat.title']}</h2>
+            </header>
+            <div class="container">
+                <div class="row">
+                    <div class="col-12">
+                        <div id="chatBox"
+                            style="height:300px;overflow:auto;border:1px solid #ddd;padding:8px;background:#fff;"></div>
+                    </div>
+                </div>
+
+                <h:form id="chatForm">
+                    <div class="row mt-2">
+                        <div class="col-3">
+                            <h:inputText id="recipient" styleClass="form-control" value="#{chatView.recipient}" />
+                            <p class="small">#{messages['chat.recipient']}</p>
+                        </div>
+                        <div class="col-7">
+                            <h:inputTextarea id="message" styleClass="form-control" rows="3"
+                                value="#{chatView.message}" />
+                        </div>
+                        <div class="col-2">
+                            <h:commandButton value="#{messages['chat.send']}" styleClass="btn btn-primary">
+                                <f:ajax execute="@form" render="message" listener="#{chatView.send}" />
+                            </h:commandButton>
+                        </div>
+                    </div>
+                </h:form>
+            </div>
+
+        </article>
+
+        <script>
+            (function () {
+                const chatBox = document.getElementById('chatBox');
+
+                const wsProto = (location.protocol === 'https:') ? 'wss:' : 'ws:';
+                const wsUrl = wsProto + '//' + location.host + "#{facesContext.externalContext.requestContextPath}" + '/ws/chat';
+                const ws = new WebSocket(wsUrl);
+
+                ws.onmessage = function (evt) {
+                    try {
+                        const m = JSON.parse(evt.data);
+                        const el = document.createElement('div');
+                        const who = document.createElement('strong');
+                        who.textContent = (m.sender || "#{messages['chat.anonymous']}") + ': ';
+                        el.appendChild(who);
+                        el.appendChild(document.createTextNode(m.text || ''));
+                        chatBox.appendChild(el);
+                        chatBox.scrollTop = chatBox.scrollHeight;
+                    } catch (e) {
+                        console.warn("#{messages['chat.invalidMessage']}", e, evt.data);
+                    }
+                };
+
+            })();
+        </script>
+
+    </ui:define>
+
+</ui:composition>

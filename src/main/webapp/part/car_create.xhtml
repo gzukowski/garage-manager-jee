@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:h="jakarta.faces.html" xmlns:ui="jakarta.faces.facelets"
+    xmlns:f="jakarta.faces.core" template="/WEB-INF/template/main.xhtml">
+
+    <f:metadata>
+        <f:viewAction action="#{carCreate.init()}" />
+    </f:metadata>
+
+    <ui:define name="content">
+        <article>
+            <header>
+                <h2>#{messages['car.create.title']}</h2>
+            </header>
+            <h:form styleClass="container" onreset="onReset()" enctype="multipart/form-data">
+                <div class="row">
+                    <div class="col-3 p-2">
+                        <div class="form-outline">
+                            <h:inputText id="name" value="#{carCreate.car.name}" styleClass="form-control" />
+                            <h:outputLabel for="name" value="#{messages['common.name']}:" styleClass="form-label" />
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-1 p-2 text-center">
+                        <h:commandButton styleClass="btn btn-primary" value="#{messages['common.create']}"
+                            action="#{carCreate.saveAction()}" />
+                    </div>
+                    <div class="col-1 p-2 text-center">
+                        <h:commandButton styleClass="btn btn-secondary" type="reset"
+                            value="#{messages['common.reset']}" />
+                    </div>
+                    <div class="col-1 p-2 text-center">
+                        <h:commandButton styleClass="btn btn-secondary" value="#{messages['common.cancel']}"
+                            action="#{carCreate.cancelAction()}" />
+                    </div>
+                </div>
+            </h:form>
+        </article>
+    </ui:define>
+
+</ui:composition>

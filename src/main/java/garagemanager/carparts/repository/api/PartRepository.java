@@ -14,5 +14,6 @@ public interface PartRepository extends Repository<Part, UUID> {
     Optional<Part> findByIdAndUser(UUID id, User user);
     List<Part> findAllByUser(User user);
     List<Part> findAllByCar(Car car);
+    List<Part> findAllByUserAndCar(User user, Car car);
 
 }

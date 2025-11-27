@@ -39,9 +39,10 @@ public class CarList {
         return cars;
     }
 
-    public String deleteAction(CarsModel.Car car) {
+    public void deleteAction(CarsModel.Car car) {
         service.delete(car.getId());
-        return "car_list?faces-redirect=true";
+        //return "car_list?faces-redirect=true";
+        this.cars = null;
     }
 
 }

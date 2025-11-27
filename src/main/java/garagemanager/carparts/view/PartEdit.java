@@ -5,6 +5,7 @@ import garagemanager.carparts.model.PartEditModel;
 import garagemanager.carparts.service.PartService;
 import garagemanager.component.ModelFunctionFactory;
 import jakarta.ejb.EJB;
+import jakarta.ejb.EJBAccessException;
 import jakarta.faces.context.FacesContext;
 import jakarta.faces.view.ViewScoped;
 import jakarta.inject.Inject;
@@ -52,12 +53,17 @@ public class PartEdit implements Serializable {
      * field and initialized during init of the view.
      */
     public void init() throws IOException {
-        Optional<Part> part = service.find(id);
-        if (part.isPresent()) {
-            this.part = factory.partToEditModel().apply(part.get());
-        } else {
-            FacesContext.getCurrentInstance().getExternalContext().responseSendError(HttpServletResponse.SC_NOT_FOUND, "Part not found");
+        try {
+            Optional<Part> part = service.find(id);
+            if (part.isPresent()) {
+                this.part = factory.partToEditModel().apply(part.get());
+            } else {
+                FacesContext.getCurrentInstance().getExternalContext().responseSendError(HttpServletResponse.SC_NOT_FOUND, "Part not found");
+            }
+        } catch (EJBAccessException e) {
+            FacesContext.getCurrentInstance().getExternalContext().responseSendError(HttpServletResponse.SC_FORBIDDEN, "Forbidden");
         }
+
     }
 
     /**

@@ -1,57 +1,91 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE html>
-<html lang="en"
-      xmlns="http://www.w3.org/1999/xhtml"
-      xmlns:h="jakarta.faces.html"
-      xmlns:ui="jakarta.faces.facelets"
-      xmlns:f="jakarta.faces.core">
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:h="jakarta.faces.html" xmlns:ui="jakarta.faces.facelets"
+    xmlns:f="jakarta.faces.core">
 <f:view>
     <h:head>
-        <meta charset="UTF-8"/>
-        <meta name="description" content="Garage manager"/>
-        <meta name="keywords" content="carparts"/>
-        <meta name="author" content="gzukowski"/>
-        <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-        <title>Garage manager</title>
+        <meta charset="UTF-8" />
+        <meta name="description" content="#{messages['site.title']}" />
+        <meta name="keywords" content="carparts" />
+        <meta name="author" content="gzukowski" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>#{messages['site.title']}</title>
 
-        <h:outputStylesheet library="webjars" name="mdb-ui-kit/6.4.0/css/mdb.min.css"/>
-        <h:outputStylesheet library="default" name="css/main.css"/>
-        <h:outputScript library="webjars" name="mdb-ui-kit/6.4.0/js/mdb.min.js"/>
-        <h:outputScript library="mdb" name="js/main.js" target="body"/>
+        <h:outputStylesheet library="webjars" name="mdb-ui-kit/6.4.0/css/mdb.min.css" />
+        <h:outputStylesheet library="default" name="css/main.css" />
+        <h:outputScript library="webjars" name="mdb-ui-kit/6.4.0/js/mdb.min.js" />
+        <h:outputScript library="mdb" name="js/main.js" target="body" />
+        <h:outputScript library="push" name="js/message.js" target="head" />
     </h:head>
 
     <h:body>
+        <!-- By default channel is application scoped.-->
+        <f:websocket channel="broadcastChannel" scope="application" onmessage="receive" />
+        <!-- By default user channel is session scoped.-->
+        <f:websocket rendered="#{facesContext.externalContext.userPrincipal != null}" channel="userChannel"
+            user="#{facesContext.externalContext.userPrincipal.name}" onmessage="receive" />
+
         <div class="container">
             <header class="mb-4 mt-4">
-                <h1>Garage</h1>
+                <h1>#{messages['site.h1']}</h1>
+                <div class="container d-flex  align-items-center justify-content-end">
+                    <h:form styleClass="container d-flex  align-items-center justify-content-end"
+                        rendered="#{facesContext.externalContext.userPrincipal != null}">
+                        #{messages.logged}:
+                        <h:outputText value="#{facesContext.externalContext.userPrincipal.name}" />
+                        <h:commandButton styleClass="btn btn-link" value="#{messages.logout}"
+                            action="#{userLogout.logoutAction()}" />
+                    </h:form>
+                    <h:graphicImage styleClass="flag" library="default" name="img/flag.svg" alt="Flag image" />
+                </div>
             </header>
 
             <nav class="navbar navbar-expand-lg navbar-light bg-light sticky-top">
-            <h:graphicImage
-                name="garage.png"
-                library="images"
-                alt="garage-icon"
-            />
+                <h:graphicImage name="garage.png" library="images" alt="garage-icon" />
                 <div class="container-fluid">
                     <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                         <li class="nav-item">
-                            <h:link styleClass="nav-link" outcome="/index.xhtml">Home</h:link>
+                            <h:link styleClass="nav-link" outcome="/index.xhtml">#{messages['nav.home']}</h:link>
                         </li>
                         <li class="nav-item">
-                            <h:link styleClass="nav-link"
-                                    outcome="/car/car_list.xhtml">Cars</h:link>
+                            <h:link styleClass="nav-link" outcome="/part/part_list.xhtml">#{messages['nav.parts']}
+                            </h:link>
                         </li>
+                        <h:panelGroup rendered="#{facesContext.externalContext.isUserInRole('admin')}">
+                            <li class="nav-item">
+                                <h:link styleClass="nav-link" outcome="/user/user_list.xhtml">#{messages['nav.users']}
+                                </h:link>
+                            </li>
+                        </h:panelGroup>
+
+                        <h:panelGroup rendered="#{facesContext.externalContext.isUserInRole('user')}">
+                            <li class="nav-item">
+                                <h:link styleClass="nav-link" outcome="/chat/chat.xhtml">#{messages['nav.chat']}
+                                </h:link>
+                            </li>
+                        </h:panelGroup>
+
+                        <!--                        <h:panelGroup rendered="#{facesContext.externalContext.isUserInRole('user')}">-->
                         <li class="nav-item">
-                            <h:link styleClass="nav-link"
-                                    outcome="/part/part_list.xhtml">Parts</h:link>
+                            <h:link styleClass="nav-link" outcome="/car/car_list.xhtml">#{messages['nav.cars']}
+                            </h:link>
                         </li>
+                        <!--                        </h:panelGroup>-->
                     </ul>
                 </div>
             </nav>
 
             <main class="mb-4 mt-4">
-                <ui:insert name="content"/>
+                <ui:insert name="content" />
             </main>
+
+            <aside>
+                <div class="form-outline">
+                    <textarea class="form-control" rows="4" id="messageContainer" readonly="readonly" />
+                    <label for="messageContainer" class="form-label">#{messages.messages}</label>
+                </div>
+            </aside>
+
 
             <footer class="text-center text-lg-start bg-light text-muted p-2">
                 <div class="text-center">
@@ -61,5 +95,5 @@
         </div>
     </h:body>
 </f:view>
-</html>
 
+</html>

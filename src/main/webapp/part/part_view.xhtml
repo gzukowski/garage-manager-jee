@@ -1,56 +1,55 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<ui:composition xmlns="http://www.w3.org/1999/xhtml"
-                xmlns:h="jakarta.faces.html"
-                xmlns:ui="jakarta.faces.facelets"
-                xmlns:f="jakarta.faces.core"
-                template="/WEB-INF/template/main.xhtml">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:h="jakarta.faces.html" xmlns:ui="jakarta.faces.facelets"
+    xmlns:f="jakarta.faces.core" template="/WEB-INF/template/main.xhtml">
 
     <f:metadata>
-        <f:viewParam name="id" value="#{partView.id}" required="true"/>
-        <f:viewAction action="#{partView.init()}"/>
+        <f:viewParam name="id" value="#{partView.id}" required="true" />
+        <f:viewAction action="#{partView.init()}" />
     </f:metadata>
 
     <ui:define name="content">
         <article>
             <header>
-                <h2><h:outputText value="#{partView.part.name}"/></h2>
+                <h2>
+                    <h:outputText value="#{partView.part.name}" />
+                </h2>
             </header>
 
             <div class="container">
                 <div class="row">
                     <div class="col-4">
                         <div class="row mb-2">
-                            <div class="col-6">Description</div>
+                            <div class="col-6">#{messages['part.description']}</div>
                             <div class="col-6">
-                                <h:outputText value="#{partView.part.description}"/>
+                                <h:outputText value="#{partView.part.description}" />
                             </div>
                         </div>
 
                         <div class="row mb-2">
-                            <div class="col-6">Price</div>
+                            <div class="col-6">#{messages['part.price']}</div>
                             <div class="col-6">
-                                <h:outputText value="#{partView.part.price}"/>
+                                <h:outputText value="#{partView.part.price}" />
                             </div>
                         </div>
 
                         <div class="row mb-2">
-                            <div class="col-6">Condition</div>
+                            <div class="col-6">#{messages['part.condition']}</div>
                             <div class="col-6">
-                                <h:outputText value="#{partView.part.condition}"/>
+                                <h:outputText value="#{partView.part.condition}" />
                             </div>
                         </div>
 
                         <div class="row mb-2">
-                            <div class="col-6">Added Date</div>
+                            <div class="col-6">#{messages['part.addedDate']}</div>
                             <div class="col-6">
-                                <h:outputText value="#{partView.part.addedDate}"/>
+                                <h:outputText value="#{partView.part.addedDate}" />
                             </div>
                         </div>
 
                         <div class="row mb-2">
-                            <div class="col-6">Car</div>
+                            <div class="col-6">#{messages['part.car']}</div>
                             <div class="col-6">
-                                <h:outputText value="#{partView.part.carBrand} #{partView.part.carName}"/>
+                                <h:outputText value="#{partView.part.carBrand} #{partView.part.carName}" />
                             </div>
                         </div>
                     </div>
