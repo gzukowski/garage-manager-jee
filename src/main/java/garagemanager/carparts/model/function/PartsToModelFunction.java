@@ -34,6 +34,7 @@ public class PartsToModelFunction implements Function<List<Part>, PartsModel>, S
                 .condition(entity.getCondition() != null ? entity.getCondition().name() : null)
                 .version(entity.getVersion())
                 .creationDateTime(entity.getCreationDateTime())
+                .lastModifiedDateTime(entity.getLastModifiedDateTime())
                 .build();
     }
 }

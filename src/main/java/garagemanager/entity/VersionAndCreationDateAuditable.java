@@ -12,6 +12,7 @@ import lombok.experimental.SuperBuilder;
 import jakarta.persistence.Column;
 import jakarta.persistence.MappedSuperclass;
 import jakarta.persistence.PrePersist;
+import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Version;
 import java.time.LocalDateTime;
 
@@ -41,11 +42,26 @@ public class VersionAndCreationDateAuditable {
     private LocalDateTime creationDateTime;
 
     /**
+     * Last modification date.
+     */
+    @Column(name = "last_modified_date_time")
+    private LocalDateTime lastModifiedDateTime;
+
+    /**
      * Update creation datetime.
      */
     @PrePersist
     public void updateCreationDateTime() {
         creationDateTime = LocalDateTime.now();
+        lastModifiedDateTime = LocalDateTime.now();
+    }
+
+    /**
+     * Update last modification datetime.
+     */
+    @PreUpdate
+    public void updateLastModifiedDateTime() {
+        lastModifiedDateTime = LocalDateTime.now();
     }
 
 }

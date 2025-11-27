@@ -24,6 +24,16 @@
                 </h:column>
 
                 <h:column>
+                    <f:facet name="header">#{messages['common.creationDate']}</f:facet>
+                    <h:outputText value="#{part.formattedCreationDateTime}" />
+                </h:column>
+
+                <h:column>
+                    <f:facet name="header">#{messages['common.lastModifiedDate']}</f:facet>
+                    <h:outputText value="#{part.formattedLastModifiedDateTime}" />
+                </h:column>
+
+                <h:column>
                     <f:facet name="header">#{messages['common.view']}</f:facet>
                     <h:link outcome="/part/part_view.xhtml" value="#{messages['common.view']}">
                         <f:param name="id" value="#{part.id}" />
