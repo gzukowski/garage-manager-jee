@@ -13,6 +13,54 @@
                 <h2>#{messages['part.edit.title']}</h2>
             </header>
             <h:form styleClass="container" onreset="onReset()" enctype="multipart/form-data">
+                <h:inputHidden id="version" value="#{partEdit.part.version}" />
+
+                <h:panelGroup rendered="#{partEdit.versionConflict}">
+                    <div class="alert alert-danger" role="alert">
+                        <h4 class="alert-heading">#{messages['part.edit.versionConflict.title']}</h4>
+                        <p>#{messages['part.edit.versionConflict.message']}</p>
+
+                        <hr />
+
+                        <div class="row">
+                            <div class="col-6">
+                                <h5>#{messages['part.edit.versionConflict.yourChanges']}</h5>
+                                <dl class="row">
+                                    <dt class="col-sm-4">#{messages['common.name']}:</dt>
+                                    <dd class="col-sm-8">#{partEdit.userInput.name}</dd>
+
+                                    <dt class="col-sm-4">#{messages['part.description']}:</dt>
+                                    <dd class="col-sm-8">#{partEdit.userInput.description}</dd>
+
+                                    <dt class="col-sm-4">#{messages['part.price']}:</dt>
+                                    <dd class="col-sm-8">#{partEdit.userInput.price}</dd>
+                                </dl>
+                            </div>
+
+                            <div class="col-6">
+                                <h5>#{messages['part.edit.versionConflict.currentState']}</h5>
+                                <dl class="row">
+                                    <dt class="col-sm-4">#{messages['common.name']}:</dt>
+                                    <dd class="col-sm-8">#{partEdit.part.name}</dd>
+
+                                    <dt class="col-sm-4">#{messages['part.description']}:</dt>
+                                    <dd class="col-sm-8">#{partEdit.part.description}</dd>
+
+                                    <dt class="col-sm-4">#{messages['part.price']}:</dt>
+                                    <dd class="col-sm-8">#{partEdit.part.price}</dd>
+
+                                    <dt class="col-sm-4">#{messages['common.version']}:</dt>
+                                    <dd class="col-sm-8">#{partEdit.part.version}</dd>
+                                </dl>
+                            </div>
+                        </div>
+
+                        <div class="alert alert-info mt-3">
+                            #{messages['part.edit.versionConflict.instruction']}
+                        </div>
+                    </div>
+                </h:panelGroup>
+
                 <div class="row">
                     <div class="col-4 p-2">
                         <div class="form-outline">

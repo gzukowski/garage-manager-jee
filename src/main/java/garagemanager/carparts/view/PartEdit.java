@@ -42,6 +42,12 @@ public class PartEdit implements Serializable {
     @Getter
     private PartEditModel part;
 
+    @Getter
+    private PartEditModel userInput;
+
+    @Getter
+    private boolean versionConflict = false;
+
 
     @Inject
     public PartEdit(ModelFunctionFactory factory, FacesContext facesContext) {
@@ -63,6 +69,8 @@ public class PartEdit implements Serializable {
             Optional<Part> part = service.find(id);
             if (part.isPresent()) {
                 this.part = factory.partToEditModel().apply(part.get());
+                this.versionConflict = false;
+                this.userInput = null;
             } else {
                 FacesContext.getCurrentInstance().getExternalContext().responseSendError(HttpServletResponse.SC_NOT_FOUND, "Part not found");
             }
@@ -82,14 +90,68 @@ public class PartEdit implements Serializable {
             service.update(factory.updatePart().apply(service.find(id).orElseThrow(), part));
             String viewId = FacesContext.getCurrentInstance().getViewRoot().getViewId();
             return viewId + "?faces-redirect=true&includeViewParams=true";
-        } catch (TransactionalException e) {
-            if (e.getCause() instanceof OptimisticLockException) {
-                init();
-                facesContext.addMessage(null, new FacesMessage("Version collision."));
+        } catch (Exception e) {
+            // Check if the root cause is OptimisticLockException
+            if (isOptimisticLockException(e)) {
+                handleOptimisticLockException();
+                return null;
+            } else if (e instanceof EJBAccessException || isEJBAccessException(e)) {
+                FacesContext.getCurrentInstance().getExternalContext()
+                    .responseSendError(HttpServletResponse.SC_FORBIDDEN, "Forbidden");
+                return null;
+            } else {
+                throw e;
             }
-            return null;
         }
+    }
 
+    private boolean isOptimisticLockException(Throwable e) {
+        Throwable current = e;
+        while (current != null) {
+            if (current instanceof OptimisticLockException) {
+                return true;
+            }
+            current = current.getCause();
+        }
+        return false;
+    }
+
+    private boolean isEJBAccessException(Throwable e) {
+        Throwable current = e;
+        while (current != null) {
+            if (current instanceof EJBAccessException) {
+                return true;
+            }
+            current = current.getCause();
+        }
+        return false;
+    }
+    private void handleOptimisticLockException() throws IOException {
+        // Store user's attempted changes
+        this.userInput = PartEditModel.builder()
+                .id(part.getId())
+                .name(part.getName())
+                .description(part.getDescription())
+                .price(part.getPrice())
+                .version(part.getVersion())
+                .build();
+
+        // Reload current state from database
+        Optional<Part> currentPart = service.find(id);
+        if (currentPart.isPresent()) {
+            this.part = factory.partToEditModel().apply(currentPart.get());
+            this.versionConflict = true;
+            
+            facesContext.addMessage(null, 
+                new FacesMessage(FacesMessage.SEVERITY_ERROR,
+                    facesContext.getApplication().getResourceBundle(facesContext, "messages")
+                        .getString("part.edit.versionConflict.title"),
+                    facesContext.getApplication().getResourceBundle(facesContext, "messages")
+                        .getString("part.edit.versionConflict.message")));
+        } else {
+            FacesContext.getCurrentInstance().getExternalContext()
+                .responseSendError(HttpServletResponse.SC_NOT_FOUND, "Part was deleted");
+        }
     }
 
 }
