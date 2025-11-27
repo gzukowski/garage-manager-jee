@@ -34,6 +34,7 @@ public class CarModel {
     public static class Part {
         private UUID id;
         private String name;
+        private Long version;
     }
 
     @Singular

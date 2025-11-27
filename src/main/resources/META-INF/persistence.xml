@@ -7,6 +7,13 @@
         <jta-data-source>jdbc/GarageManagerParts</jta-data-source>
         <properties>
             <property name="jakarta.persistence.schema-generation.database.action" value="create"/>
+            <property name="eclipselink.logging.level.sql" value="FINE"/>
+            <property name="eclipselink.logging.level" value="FINE"/>
+            <property name="eclipselink.logging.level.cache" value="FINE"/>
+            <property name="eclipselink.logging.parameters" value="true"/>
+            <!-- Uncomment/comment two lines below to enable/disable batch queries. -->
+            <property name="eclipselink.jdbc.batch-writing" value="JDBC"/>
+            <property name="eclipselink.jdbc.batch-writing.size" value="500"/>
         </properties>
     </persistence-unit>
 

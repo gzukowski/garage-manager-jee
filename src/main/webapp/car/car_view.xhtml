@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:h="jakarta.faces.html" xmlns:ui="jakarta.faces.facelets"
-    xmlns:f="jakarta.faces.core" template="/WEB-INF/template/main.xhtml">
+                xmlns:f="jakarta.faces.core" template="/WEB-INF/template/main.xhtml">
 
     <f:metadata>
         <f:viewParam name="id" value="#{carView.id}" required="true" />
@@ -14,6 +14,7 @@
                     <h:outputText value="#{carView.car.brand} #{carView.car.name}" />
                 </h2>
             </header>
+
             <div class="row mb-2">
                 <div class="col-6">
                     #{messages['car.productionYear']}
@@ -40,21 +41,20 @@
                     <h:outputText value="#{carView.car.mileage}" />
                 </div>
             </div>
-            <h:outputText value="#{carView.car.mileage}" />
-            </div>
-            </div>
-            </div>
-
-            </div>
 
             <div class="row mt-4">
                 <h:panelGroup rendered="#{not empty carView.car.parts}">
                     <h:dataTable value="#{carView.car.parts}" var="part" styleClass="table align-middle mb-0 bg-white"
-                        headerClass="bg-light">
+                                 headerClass="bg-light">
 
                         <h:column>
                             <f:facet name="header">#{messages['common.name']}</f:facet>
                             <h:outputText value="#{part.name}" />
+                        </h:column>
+
+                        <h:column>
+                            <f:facet name="header">#{messages['common.version']}</f:facet>
+                            <h:outputText value="#{part.version}" />
                         </h:column>
 
                         <h:column>
@@ -75,7 +75,7 @@
                             <f:facet name="header">#{messages['common.delete']}</f:facet>
                             <h:form>
                                 <h:commandButton value="#{messages['common.delete']}" styleClass="btn"
-                                    action="#{carView.deletePartAction(part)}" />
+                                                 action="#{carView.deletePartAction(part)}" />
                             </h:form>
                         </h:column>
                     </h:dataTable>
@@ -84,7 +84,6 @@
                 <h:panelGroup rendered="#{empty carView.car.parts}">
                     <p><em>#{messages['car.noParts']}</em></p>
                 </h:panelGroup>
-            </div>
             </div>
         </article>
     </ui:define>

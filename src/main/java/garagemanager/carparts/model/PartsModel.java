@@ -2,6 +2,7 @@ package garagemanager.carparts.model;
 
 import lombok.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Getter
@@ -29,5 +30,8 @@ public class PartsModel {
         private String carName;
         private double price;
         private String condition;
+
+        private Long version;
+        private LocalDateTime creationDateTime;
     }
 }

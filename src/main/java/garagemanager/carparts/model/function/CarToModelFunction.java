@@ -33,6 +33,7 @@ public class CarToModelFunction implements Function<Car, CarModel>, Serializable
         return CarModel.Part.builder()
                 .id(part.getId())
                 .name(part.getName())
+                .version(part.getVersion())
                 .build();
     }
 }

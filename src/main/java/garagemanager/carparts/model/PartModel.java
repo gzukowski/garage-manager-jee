@@ -22,6 +22,9 @@ public class PartModel {
     private LocalDateTime addedDate;
     private PartCondition condition;
 
+    private Long version;
+    private LocalDateTime creationDateTime;
+
     private UUID carId;
     private String carName;
     private String carBrand;

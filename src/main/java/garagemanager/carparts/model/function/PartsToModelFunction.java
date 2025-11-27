@@ -32,6 +32,8 @@ public class PartsToModelFunction implements Function<List<Part>, PartsModel>, S
                 .carName(entity.getCar() != null ? entity.getCar().getName() : null)
                 .price(entity.getPrice())
                 .condition(entity.getCondition() != null ? entity.getCondition().name() : null)
+                .version(entity.getVersion())
+                .creationDateTime(entity.getCreationDateTime())
                 .build();
     }
 }

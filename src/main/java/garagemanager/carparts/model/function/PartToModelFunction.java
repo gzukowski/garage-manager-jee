@@ -26,6 +26,8 @@ public class PartToModelFunction implements Function<Part, PartModel>, Serializa
                 .carBrand(entity.getCar() != null ? entity.getCar().getBrand() : null)
                 .userId(entity.getUser() != null ? entity.getUser().getId() : null)
                 .userName(entity.getUser() != null ? entity.getUser().getName() : null)
+                .version(entity.getVersion())
+                .creationDateTime(entity.getCreationDateTime())
                 .build();
     }
 }

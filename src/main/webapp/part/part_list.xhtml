@@ -19,6 +19,11 @@
                 </h:column>
 
                 <h:column>
+                    <f:facet name="header">#{messages['common.version']}</f:facet>
+                    <h:outputText value="#{part.version}" />
+                </h:column>
+
+                <h:column>
                     <f:facet name="header">#{messages['common.view']}</f:facet>
                     <h:link outcome="/part/part_view.xhtml" value="#{messages['common.view']}">
                         <f:param name="id" value="#{part.id}" />

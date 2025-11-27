@@ -15,6 +15,7 @@ public class PartToEditModelFunction implements Function<Part, PartEditModel>, S
                 .name(entity.getName())
                 .price(entity.getPrice())
                 .description(entity.getDescription())
+                .version(entity.getVersion())
                 .build();
     }
 

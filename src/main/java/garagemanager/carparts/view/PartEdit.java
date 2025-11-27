@@ -6,11 +6,14 @@ import garagemanager.carparts.service.PartService;
 import garagemanager.component.ModelFunctionFactory;
 import jakarta.ejb.EJB;
 import jakarta.ejb.EJBAccessException;
+import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
 import jakarta.faces.view.ViewScoped;
 import jakarta.inject.Inject;
 import jakarta.inject.Named;
+import jakarta.persistence.OptimisticLockException;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.transaction.TransactionalException;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -29,6 +32,8 @@ public class PartEdit implements Serializable {
 
     private final ModelFunctionFactory factory;
 
+    private final FacesContext facesContext;
+
 
     @Setter
     @Getter
@@ -39,8 +44,9 @@ public class PartEdit implements Serializable {
 
 
     @Inject
-    public PartEdit(ModelFunctionFactory factory) {
+    public PartEdit(ModelFunctionFactory factory, FacesContext facesContext) {
         this.factory = factory;
+        this.facesContext = facesContext;
     }
 
     @EJB
@@ -71,10 +77,19 @@ public class PartEdit implements Serializable {
      *
      * @return navigation case to the same page
      */
-    public String saveAction() {
-        service.update(factory.updatePart().apply(service.find(id).orElseThrow(), part));
-        String viewId = FacesContext.getCurrentInstance().getViewRoot().getViewId();
-        return viewId + "?faces-redirect=true&includeViewParams=true";
+    public String saveAction() throws IOException {
+        try {
+            service.update(factory.updatePart().apply(service.find(id).orElseThrow(), part));
+            String viewId = FacesContext.getCurrentInstance().getViewRoot().getViewId();
+            return viewId + "?faces-redirect=true&includeViewParams=true";
+        } catch (TransactionalException e) {
+            if (e.getCause() instanceof OptimisticLockException) {
+                init();
+                facesContext.addMessage(null, new FacesMessage("Version collision."));
+            }
+            return null;
+        }
+
     }
 
 }

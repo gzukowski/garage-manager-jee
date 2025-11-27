@@ -21,6 +21,8 @@ public class UpdatePartWithModelFunction implements BiFunction<Part, PartEditMod
                 .condition(entity.getCondition())
                 .car(entity.getCar())
                 .user(entity.getUser())
+                .version(entity.getVersion())
+                .creationDateTime(entity.getCreationDateTime())
                 .build();
     }
 }

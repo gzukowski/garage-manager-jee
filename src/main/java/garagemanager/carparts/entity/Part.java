@@ -1,5 +1,6 @@
 package garagemanager.carparts.entity;
 
+import garagemanager.entity.VersionAndCreationDateAuditable;
 import garagemanager.user.entity.User;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -15,6 +16,8 @@ import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
+
+
 @Getter
 @Setter
 @SuperBuilder
@@ -24,7 +27,7 @@ import java.util.UUID;
 @EqualsAndHashCode(callSuper = false)
 @Entity
 @Table(name = "parts")
-public class Part implements Serializable {
+public class Part extends VersionAndCreationDateAuditable implements Serializable {
     @Id
     private UUID id;
     private String name;
@@ -40,4 +43,5 @@ public class Part implements Serializable {
     @ManyToOne
     @JoinColumn(name = "user_name")
     private User user;
+
 }
